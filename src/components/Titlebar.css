@@ -1,0 +1,57 @@
+.title {
+    color: #36A1FB;
+    margin-left: 170px;
+}
+
+.titlebar {
+    display: flex;
+    justify-content: space-between;
+}
+
+.login {
+    margin-right: 50px;
+    margin-top: 25px;
+    display: flex;
+    width: 110px;
+    justify-content: space-between;
+}
+
+.sign-in-name {
+    margin-top: 7px;
+    font-weight: 600;
+}
+
+.popup-container {
+    height: 260px;
+    width: 300px;
+    background-color: white;
+    border-radius: 10px;
+    position: absolute;
+    top: 70px;
+    right: 50px;
+    padding-top: 40px;
+    z-index: 1;
+    box-shadow: 7px 13px 22px 2px rgb(196 195 195);
+}
+
+.disable-popup {
+    display: none;
+}
+
+.pop-icon {
+    height: 80px;
+    width: 80px;
+}
+
+.popup-btn {
+    height: 30px;
+    width: 120px;
+    background-color: #36A1FB;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-top: 20px;
+    cursor: pointer;
+}

@@ -1,0 +1,30 @@
+.navbar {
+    display: inline-block;
+    width: 100px;
+    position: absolute;
+    left: 5px;
+}
+
+.other-icons {
+    position: relative;
+    bottom: 75px;
+}
+
+.nav-icons {
+    height: 35px;
+    width: 35px;
+    font-size: 0.8rem;
+    margin: 62px 35px 62px 35px;
+}
+
+.icon {
+    height: 35px;
+    width: 35px;
+    cursor: pointer;
+}
+
+.position {
+    position: relative;
+    bottom: 58px;
+    left: 35px;
+}
