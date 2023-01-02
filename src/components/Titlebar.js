@@ -20,7 +20,7 @@ const Titlebar = () => {
         <IoMdContact className='pop-icon' />
 
         <p>Dhrumil Punjabi</p>
-        <p>dhrumilpunjabi.dp@gmail.com</p>
+        <p className='email'>dhrumilpunjabi.dp@gmail.com</p>
 
         <button className='popup-btn'>Log Out</button>
       </div>
