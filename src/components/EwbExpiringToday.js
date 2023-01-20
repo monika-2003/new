@@ -173,7 +173,7 @@ const [refresh,setRefresh]=useState(false);
             ],
             "filter_fields": {"ewaybill_no":611}
           })*/
-          /*body:JSON.stringify({
+          body:JSON.stringify({
             "paginate": {
               "number_of_rows": 100,
               "page_number": 1
@@ -182,7 +182,7 @@ const [refresh,setRefresh]=useState(false);
               {}
             ],
             "filter_fields": nameField
-          })*/
+          })
         })
         const data = await response.json();
         setResult(data)
