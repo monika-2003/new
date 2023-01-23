@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import Background from "./Background";
 import "./Login.css";
 import { Link, useNavigate } from 'react-router-dom';
-import { SERVER_URL } from "../config/config";
+import { token } from "../config/config";
 class Temp extends Component {
   constructor() {
     super();
@@ -87,7 +87,7 @@ class Temp extends Component {
       <Background />
       </div>
       :
-      this.props.navigate("/ewb-expiring-today")
+        this.props.navigate("/ewb-expiring-today")
       
     }
     </div>

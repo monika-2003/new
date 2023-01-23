@@ -13,7 +13,8 @@ const getLocalFlag = () => {
   }
 var SERVER_URL = ""
 const token=JSON.parse(localStorage.getItem('login'))
-var ACCESS_TOKEN = "Bearer "+token.store
+if(token)
+  var ACCESS_TOKEN = "Bearer "+token.store
 if (getLocalFlag()){
     console.log("in if")
     SERVER_URL="http://43.252.197.60:8001"
@@ -27,10 +28,13 @@ else{
     // const SERVER_URL = "https://d7edf369be0e55.localhost.run";
 
 }
+const logout = (i) => {
+//  localStorage.removeItem(i);
+};
 
 //SERVER_URL = "http://" + SERVER_IP + ":" + SERVER_PORT;
 
 // SERVER_URL = "https://c9a9-111-235-75-237.in.ngrok.io";
 
 
-export { SERVER_URL, USE_OVERLAY, ACCESS_TOKEN };
+export { SERVER_URL, USE_OVERLAY, ACCESS_TOKEN, logout, token };

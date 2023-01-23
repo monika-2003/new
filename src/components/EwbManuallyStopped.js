@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { SERVER_URL } from "../config/config.js";
+import { SERVER_URL, ACCESS_TOKEN } from "../config/config.js";
 import Navbar from './Navbar'
 import Titlebar from './Titlebar'
 import './EwbExpiringToday.css'
@@ -8,42 +8,43 @@ import {MdSkipNext} from 'react-icons/md'
 import {BiSkipPrevious} from 'react-icons/bi'
 import {BiRightArrow} from 'react-icons/bi'
 import {BiLeftArrow} from 'react-icons/bi'
-import Content from './Content'
-const EwbManuallyStopped = () => {
-  const [result,setResult]=useState({})
+import Buttons from "./Buttons.js";
+import moment from 'moment'
+import Card from './Card'
+import Background from "./Background.js";
+const token=JSON.parse(localStorage.getItem('login'))
+const EwbExpiringToday = () => {
+const [result,setResult]=useState({})
+const [stopresult,setStopResult]=useState({})
+const [ch,setCh]=useState([])
+const [refresh,setRefresh]=useState(false);
   useEffect(()=>{
     const fetchData = async () => {
-      var response = await fetch("https://run.mocky.io/v3/cc5526a1-dd32-434a-984b-2cf144eb067a", {
+      var response = await fetch(SERVER_URL+"/eway/db/", {
         method:"POST",
         headers:{
           "Content-Type":"application/json",
-          "Accept":"application/json"
+          "Accept":"application/json",
+          "Authorization":ACCESS_TOKEN
         },
-        body: JSON.stringify()
+        body:JSON.stringify({
+          "paginate": {
+            "number_of_rows": 100,
+            "page_number": 1
+          },
+          "sort_fields": [
+            {}
+          ],
+          "filter_fields": {"manually_stopped":1}
+        })
       })
-      .then(response=>{return response.json();})
-      .then(data=>{setResult(data)})
+
+      const data = await response.json();
+      setResult(data)
+      console.log("Here:",data,ACCESS_TOKEN)
     }
     fetchData();
-    console.log("Data is fetched successfully!",result["data"]);
   },[]);
-/*const [result,setResult]=useState({})
-  useEffect(()=>{
-    const fetchData = async () => {
-      var response = await fetch("https://run.mocky.io/v3/1ae6e710-cae7-45d4-b5fd-bffe7c671099", {
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-          "Accept":"application/json"
-        },
-        body: JSON.stringify()
-      })
-      .then(response=>{return response.json();})
-      .then(data=>{setResult(data)})
-    }
-    fetchData();
-    console.log("Data is fetched successfully!",result["data"]);
-  },[]);*/
    /*{
         Header: "Extended Times",
         accessor: "extended_times",
@@ -56,7 +57,7 @@ const EwbManuallyStopped = () => {
         () => [
             {
                 Header: "Number",
-                accessor: "eway_bill_no",
+                accessor: "ewaybill_no",
                 width: "100px",
                 minWidth: "10px",
                 canFilter: true,
@@ -64,7 +65,7 @@ const EwbManuallyStopped = () => {
     
             {
                 Header: "Date",
-                accessor: "ewd_date",
+                accessor: "ewb_date",
                 width: "100px",
                 minWidth: "10px",
                 canFilter: true,
@@ -80,7 +81,7 @@ const EwbManuallyStopped = () => {
     
           {
             Header: "From",
-            accessor: "from_station",
+            accessor: "consignor_place",
             width: "100px",
             minWidth: "10px",
             canFilter: true,
@@ -88,7 +89,7 @@ const EwbManuallyStopped = () => {
     
           {
             Header: "To",
-            accessor: "to_station",
+            accessor: "consignee_place",
             width: "100px",
             minWidth: "10px",
             canFilter: true,
@@ -120,11 +121,12 @@ const EwbManuallyStopped = () => {
     
           {
             Header: "Truck No",
-            accessor: "vehicle_no",
+            accessor: "truck_number",
             width: "100px",
             minWidth: "10px",
             canFilter: true,
           },
+    
           {
             Header: "Status",
             accessor:"status",
@@ -132,73 +134,161 @@ const EwbManuallyStopped = () => {
             width: "100px",
             minWidth: "10px",
             canFilter: true,
-          }
-    
+          },
+            
         ],
         []
     );
-    const [data, setData] = React.useState([]);
-  const [isStop, setIsStop] = React.useState(false);
-  const [popupPassword, setPopupPassword] = React.useState("");
-  const [isPasswordCorrect, setIsPasswordCorrect] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
-  const [pageCount, setPageCount] = React.useState(0);
-  const [responseFromServer, setResponseFromServer] = React.useState({});
-  const [submitted, setSubmitted] = React.useState(false);
-  const fetchIdRef = React.useRef(0);
-  const sortIdRef = React.useRef(0);
 
- /* const fetchData = React.useCallback(
-    async ({ pageSize, pageIndex, sortBy, customFilters }) => {
-      // This will get called when the table needs new data
-      // You could fetch your data from literally anywhere,
-      // even a server. But for this example, we'll just fake it.
+    const [nameField,setNameField] = useState({
+      "ewaybill_no":"",
+      "ewb_date":"",
+      "amount":"",
+      "consignor_place":"",
+      "consignee_place":"",
+      "consignor_name":"",
+      "consignee_name":"",
+      "cewb_no":"",
+      "truck_number":""
+    })
 
-      // Give this fetch an ID
-      const fetchId = ++fetchIdRef.current;
-      console.log("12323", sortBy, customFilters, fetchId);
-      // Set the loading state
-      setLoading(true);
-
-      if (fetchId === fetchIdRef.current) {
-        // customFilters.created_from = String(
-        //   sessionObject.sessionVariables.branch_id
-        // );
-        let response = await fetch("https://run.mocky.io/v3/cc5526a1-dd32-434a-984b-2cf144eb067a", {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
+    const fieldsOfFilters = ["ewaybill_no","ewb_date","amount","consignor_place","consignee_place","consignor_name","consignee_name","cewb_no","truck_number"]
+    const getCh=(e)=>{
+      const {value,checked}=e.target
+      console.log(`${value} is ${checked}`)
+      if(checked){
+        setCh([...ch,value])
+      }else {
+        setCh(ch.filter((e)=>e!==value))
+      }         
+      console.log("data:",ch,JSON.stringify(ch))
+    }
+    useEffect(()=>{
+      const fetchData = async () => {
+        const response = await fetch('http://43.252.197.60:8001/eway/db/', {
+          method:"POST",          
+          headers:{
+            "Content-Type":"application/json",
+            "Accept":"application/json",
+            "Authorization":ACCESS_TOKEN
           },
-          body: JSON.stringify({
-            paginate: { number_of_rows: pageSize, page_number: pageIndex + 1 },
-            sort_fields: sortBy,
-            filter_fields: customFilters,
+          body:JSON.stringify({
+            "paginate": {
+              "number_of_rows": 100,
+              "page_number": 1
+            },
+            "sort_fields": [
+              {}
+            ],
+            "filter_fields": nameField
           })
-        });
-        let resp = await response.json();
-        if (resp["data"] && "total_rows" in resp) {
-          setData(resp["data"]);
-          setPageCount(Math.ceil(resp["total_rows"] / pageSize));
-        }
-        setLoading(false);
-      }},
-      []
-    );*/
-    return(
-    <div>
-    <Titlebar />
-    <Navbar />
+        })
+        const data = await response.json();
+        setResult(data)
+        console.log("janvi_data",data,token.store)
+      }
+      fetchData()
+    },[nameField]);
 
-    <div className='inner'>
+    const handleChange = (e) => {
+      setNameField({...nameField, [e.target.name]: e.target.value});
+    }
+    useEffect(()=>{
+  
+      
+    },[refresh])
+    const stop=()=>{
+      fetch("/eway/eway_bill_stop/", {
+        method:"PUT",
+        headers: {
+          "Content-Type":"application/json",
+            "Accept":"application/json",
+            "Authorization":ACCESS_TOKEN
+        },
+        body:JSON.stringify(ch)
+      }).then((response)=>{
+        response.json().then((result)=>{
+          console.warn("result",result)
+        })
+      })}
+      return (
+        <div className='ewb-expiring-today'>
+            <Titlebar />
+            <Navbar />
+    
+            <div className='inner'>
+    
+              <Card />
 
-      <Content />
+              <div className='align-btns'>
+                <Buttons name = "Refresh" onClick={()=>setRefresh(true)}/>
+                <Buttons name = "Stop"  onClick={stop} />
+              </div>
+              
+            <Background/>
+              <div className='wrapper'>
+        <table className='table'>
+            <thead>
+                <tr className='table-heading'>
+                    <th colspan = "4" className='first-heading'>Ewb Details</th>
+                    <th colspan = "7" className='second-heading'>Consignment Details</th>
+                </tr>
+                
+            <tr className='heading-row'>
+                <th>
+                </th>
 
-      <Table 
-        columns = {columns}
-      />
-    </div>
-</div>)
+                {columns.map((Name)=> <th className='heading-col'>{Name.Header}</th>)}
+            </tr>
+
+            <tr className='search-row'>
+                <td>
+                <input 
+                    type='checkbox'
+                    />
+                </td>
+            {
+              fieldsOfFilters.map((Name)=> 
+              <td className='search-col'> <input name={Name} onChange={handleChange} placeholder = "Search" className='search-input'/></td>
+            )}
+            </tr>
+            </thead>
+            <tbody>
+            {/*moment({hours:0}).diff(moment(eway.valid_upto,"D-MM-YYYY"),"days")>=7 && moment({hours:0}).diff(moment(eway.valid_upto,"D-MM-YYYY"),"days")<=14?*/}
+                  {result["data"] && result["data"].map(eway => {
+                  return (
+                  <tr className='heading-row'>
+                      <td>
+                        <input type='checkbox' value={eway.ewaybill_no} onChange={(e)=>{getCh(e)}}/>
+                      </td>
+                      <td>{eway.ewaybill_no}</td>
+                      <td>{new Date(eway.ewb_date).toLocaleString().split(",")[0]}</td>
+                      <td>{eway.amount}</td>
+                      <td>{eway.consignor_place}</td>
+                      <td>{eway.consignee_place}</td>
+                      <td>{eway.consignor_name}</td>
+                      <td>{eway.consignee_name}</td>
+                      <td>{eway.cewb_no}</td>
+                      <td>{eway.truck_number}</td>
+                      <td>{"Extended"}</td>
+                    </tr>)
+                  })}
+
+            </tbody>
+            </table>
+
+            <div className='last-row'>
+                <button><BiSkipPrevious className='table-icon1' /></button>
+                <button><BiRightArrow className='table-icon2' /></button>
+                <div>{result.total_rows}</div>
+                <button><BiLeftArrow className='table-icon3' /></button>
+                <button><MdSkipNext className='table-icon4' /></button>
+            </div>
+            </div>
+            </div>
+            </div>
+            
+)
 }
 
-export default EwbManuallyStopped
+export default EwbExpiringToday

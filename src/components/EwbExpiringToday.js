@@ -12,27 +12,35 @@ import Buttons from "./Buttons.js";
 import moment from 'moment'
 import Card from './Card'
 import Background from "./Background.js";
-const token=JSON.parse(localStorage.getItem('login'))
 const EwbExpiringToday = () => {
 const [result,setResult]=useState({})
-const [stopresult,setStopResult]=useState({})
+const [stopResult,setStopResult]=useState(false)
 const [ch,setCh]=useState([])
 const [refresh,setRefresh]=useState(false);
   useEffect(()=>{
     const fetchData = async () => {
-      var response = await fetch("http://43.252.197.60:8001/eway/db/", {
+      var response = await fetch(SERVER_URL+"/eway/db/", {
         method:"POST",
         headers:{
           "Content-Type":"application/json",
           "Accept":"application/json",
           "Authorization":ACCESS_TOKEN
         },
-        
+        body:JSON.stringify({
+          "paginate": {
+            "number_of_rows": 100,
+            "page_number": 1
+          },
+          "sort_fields": [
+            {}
+          ],
+          "filter_fields": {"valid_upto":new Date().toLocaleDateString()+" 23:59:00","manually_stopped":0}
+        })
       })
 
       const data = await response.json();
       setResult(data)
-      console.log("Here:",data,ACCESS_TOKEN)
+      console.log("Here:",data,ACCESS_TOKEN,new Date().toLocaleDateString()+" 23:59:00")
     }
     fetchData();
   },[]);
@@ -156,23 +164,13 @@ const [refresh,setRefresh]=useState(false);
     }
     useEffect(()=>{
       const fetchData = async () => {
-        const response = await fetch('http://43.252.197.60:8001/eway/db/', {
+        const response = await fetch(SERVER_URL+"/eway/db/", {
           method:"POST",          
           headers:{
             "Content-Type":"application/json",
             "Accept":"application/json",
             "Authorization":ACCESS_TOKEN
           },
-          /*body:JSON.stringify({
-            "paginate": {
-              "number_of_rows": 100,
-              "page_number": 1
-            },
-            "sort_fields": [
-              {}
-            ],
-            "filter_fields": {"ewaybill_no":611}
-          })*/
           body:JSON.stringify({
             "paginate": {
               "number_of_rows": 100,
@@ -186,32 +184,35 @@ const [refresh,setRefresh]=useState(false);
         })
         const data = await response.json();
         setResult(data)
-        console.log("janvi_data",data,token.store)
+        console.log("janvi_data",data,ACCESS_TOKEN)
       }
       fetchData()
     },[nameField]);
 
     const handleChange = (e) => {
-      setNameField({...nameField, [e.target.name]: e.target.value});
+      setNameField({...nameField, [e.target.name]: e.target.value,"valid_upto":new Date().toLocaleDateString()+" 23:59:00","manually_stopped":0});
     }
     useEffect(()=>{
   
       
     },[refresh])
-    const stop=()=>{
-      fetch("/eway/eway_bill_stop/", {
-        method:"PUT",
-        headers: {
-          "Content-Type":"application/json",
-            "Accept":"application/json",
-            "Authorization":ACCESS_TOKEN
-        },
-        body:JSON.stringify(ch)
-      }).then((response)=>{
-        response.json().then((result)=>{
-          console.warn("result",result)
+    useEffect(()=>{
+  
+      const fetchData = async () => {
+        const rs = await fetch(SERVER_URL+"/eway/eway_bill_stop/", {
+          method:"PUT",
+          headers: {
+            "Content-Type":"application/json",
+              "Accept":"application/json",
+              "Authorization":ACCESS_TOKEN
+          },
+          body:JSON.stringify(ch)
         })
-      })}
+          const data = await rs.json();
+          console.log("janvi_data",data)
+        }
+          fetchData()
+    },[stopResult])
       return (
         <div className='ewb-expiring-today'>
             <Titlebar />
@@ -223,7 +224,7 @@ const [refresh,setRefresh]=useState(false);
 
               <div className='align-btns'>
                 <Buttons name = "Refresh" onClick={()=>setRefresh(true)}/>
-                <Buttons name = "Stop"  onClick={stop} />
+                <Buttons name = "Stop"  onClick={()=>{setStopResult(stopResult=>!stopResult)}} />
               </div>
               
             <Background/>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { SERVER_URL } from "../config/config.js";
+import { SERVER_URL, ACCESS_TOKEN } from "../config/config.js";
 import Navbar from './Navbar'
 import Titlebar from './Titlebar'
 import './EwbExpiringToday.css'
@@ -8,26 +8,42 @@ import {MdSkipNext} from 'react-icons/md'
 import {BiSkipPrevious} from 'react-icons/bi'
 import {BiRightArrow} from 'react-icons/bi'
 import {BiLeftArrow} from 'react-icons/bi'
+import Buttons from "./Buttons.js";
 import moment from 'moment'
-import Content from './Content'
-const EwbExtendedToday = () => {
-  
+import Card from './Card'
+import Background from "./Background.js";
+const token=JSON.parse(localStorage.getItem('login'))
+const EwbExpiringToday = () => {
 const [result,setResult]=useState({})
+const [stopresult,setStopResult]=useState({})
+const [ch,setCh]=useState([])
+const [refresh,setRefresh]=useState(false);
   useEffect(()=>{
     const fetchData = async () => {
-      var response = await fetch(SERVER_URL, {
+      var response = await fetch(SERVER_URL+"/eway/db/", {
         method:"POST",
         headers:{
           "Content-Type":"application/json",
-          "Accept":"application/json"
+          "Accept":"application/json",
+          "Authorization":ACCESS_TOKEN
         },
-        body: JSON.stringify()
+        body:JSON.stringify({
+          "paginate": {
+            "number_of_rows": 100,
+            "page_number": 1
+          },
+          "sort_fields": [
+            {}
+          ],
+          "filter_fields": {"last_extended":new Date().toLocaleDateString()}
+        })
       })
-      .then(response=>{return response.json();})
-      .then(data=>{setResult(data)})
+
+      const data = await response.json();
+      setResult(data)
+      console.log("Here:",data,ACCESS_TOKEN)
     }
     fetchData();
-    console.log("Data is fetched successfully!",result["data"]);
   },[]);
    /*{
         Header: "Extended Times",
@@ -41,7 +57,7 @@ const [result,setResult]=useState({})
         () => [
             {
                 Header: "Number",
-                accessor: "eway_bill_no",
+                accessor: "ewaybill_no",
                 width: "100px",
                 minWidth: "10px",
                 canFilter: true,
@@ -49,7 +65,7 @@ const [result,setResult]=useState({})
     
             {
                 Header: "Date",
-                accessor: "ewd_date",
+                accessor: "ewb_date",
                 width: "100px",
                 minWidth: "10px",
                 canFilter: true,
@@ -65,7 +81,7 @@ const [result,setResult]=useState({})
     
           {
             Header: "From",
-            accessor: "from_station",
+            accessor: "consignor_place",
             width: "100px",
             minWidth: "10px",
             canFilter: true,
@@ -73,7 +89,7 @@ const [result,setResult]=useState({})
     
           {
             Header: "To",
-            accessor: "to_station",
+            accessor: "consignee_place",
             width: "100px",
             minWidth: "10px",
             canFilter: true,
@@ -105,7 +121,7 @@ const [result,setResult]=useState({})
     
           {
             Header: "Truck No",
-            accessor: "vehicle_no",
+            accessor: "truck_number",
             width: "100px",
             minWidth: "10px",
             canFilter: true,
@@ -113,7 +129,8 @@ const [result,setResult]=useState({})
     
           {
             Header: "Status",
-            accessor: "status",
+            accessor:"status",
+            //text: "Expired Last Week",
             width: "100px",
             minWidth: "10px",
             canFilter: true,
@@ -122,7 +139,78 @@ const [result,setResult]=useState({})
         ],
         []
     );
-    
+
+    const [nameField,setNameField] = useState({
+      "ewaybill_no":"",
+      "ewb_date":"",
+      "amount":"",
+      "consignor_place":"",
+      "consignee_place":"",
+      "consignor_name":"",
+      "consignee_name":"",
+      "cewb_no":"",
+      "truck_number":""
+    })
+
+    const fieldsOfFilters = ["ewaybill_no","ewb_date","amount","consignor_place","consignee_place","consignor_name","consignee_name","cewb_no","truck_number"]
+    const getCh=(e)=>{
+      const {value,checked}=e.target
+      console.log(`${value} is ${checked}`)
+      if(checked){
+        setCh([...ch,value])
+      }else {
+        setCh(ch.filter((e)=>e!==value))
+      }         
+      console.log("data:",ch,JSON.stringify(ch))
+    }
+    useEffect(()=>{
+      const fetchData = async () => {
+        const response = await fetch('http://43.252.197.60:8001/eway/db/', {
+          method:"POST",          
+          headers:{
+            "Content-Type":"application/json",
+            "Accept":"application/json",
+            "Authorization":ACCESS_TOKEN
+          },
+          body:JSON.stringify({
+            "paginate": {
+              "number_of_rows": 100,
+              "page_number": 1
+            },
+            "sort_fields": [
+              {}
+            ],
+            "filter_fields": nameField
+          })
+        })
+        const data = await response.json();
+        setResult(data)
+        console.log("janvi_data",data,token.store)
+      }
+      fetchData()
+    },[nameField]);
+
+    const handleChange = (e) => {
+      setNameField({...nameField, [e.target.name]: e.target.value});
+    }
+    useEffect(()=>{
+  
+      
+    },[refresh])
+    const stop=()=>{
+      fetch("/eway/eway_bill_stop/", {
+        method:"PUT",
+        headers: {
+          "Content-Type":"application/json",
+            "Accept":"application/json",
+            "Authorization":ACCESS_TOKEN
+        },
+        body:JSON.stringify(ch)
+      }).then((response)=>{
+        response.json().then((result)=>{
+          console.warn("result",result)
+        })
+      })}
       return (
         <div className='ewb-expiring-today'>
             <Titlebar />
@@ -130,8 +218,14 @@ const [result,setResult]=useState({})
     
             <div className='inner'>
     
-              <Content />
-    
+              <Card />
+
+              <div className='align-btns'>
+                <Buttons name = "Refresh" onClick={()=>setRefresh(true)}/>
+                <Buttons name = "Stop"  onClick={stop} />
+              </div>
+              
+            <Background/>
               <div className='wrapper'>
         <table className='table'>
             <thead>
@@ -153,30 +247,31 @@ const [result,setResult]=useState({})
                     type='checkbox'
                     />
                 </td>
-            {columns.map((Name)=> <td className='search-col'> <input name={Name.Header} placeholder = "Search" className='search-input'/></td>)}
+            {
+              fieldsOfFilters.map((Name)=> 
+              <td className='search-col'> <input name={Name} onChange={handleChange} placeholder = "Search" className='search-input'/></td>
+            )}
             </tr>
-
             </thead>
-
             <tbody>
-            {result["data"] && result["data"].map(eway => {
-                  return moment({hours:0}).diff(moment(eway.last_extended_date),"days")==0?
-                    <tr className='heading-row'>
+            {/*moment({hours:0}).diff(moment(eway.valid_upto,"D-MM-YYYY"),"days")>=7 && moment({hours:0}).diff(moment(eway.valid_upto,"D-MM-YYYY"),"days")<=14?*/}
+                  {result["data"] && result["data"].map(eway => {
+                  return (
+                  <tr className='heading-row'>
                       <td>
-                        <input type='checkbox' />
+                        <input type='checkbox' value={eway.ewaybill_no} onChange={(e)=>{getCh(e)}}/>
                       </td>
-                      <td>{eway.eway_bill_no}</td>
-                      <td>{eway.date}</td>
+                      <td>{eway.ewaybill_no}</td>
+                      <td>{new Date(eway.ewb_date).toLocaleString().split(",")[0]}</td>
                       <td>{eway.amount}</td>
-                      <td>{eway.from_station}</td>
-                      <td>{eway.to_station}</td>
+                      <td>{eway.consignor_place}</td>
+                      <td>{eway.consignee_place}</td>
                       <td>{eway.consignor_name}</td>
                       <td>{eway.consignee_name}</td>
                       <td>{eway.cewb_no}</td>
-                      <td>{eway.vehicle_no}</td>
+                      <td>{eway.truck_number}</td>
                       <td>{"Extended"}</td>
-                    </tr>
-                    :<></>
+                    </tr>)
                   })}
 
             </tbody>
@@ -185,434 +280,15 @@ const [result,setResult]=useState({})
             <div className='last-row'>
                 <button><BiSkipPrevious className='table-icon1' /></button>
                 <button><BiRightArrow className='table-icon2' /></button>
-                <div>1</div>
+                <div>{result.total_rows}</div>
                 <button><BiLeftArrow className='table-icon3' /></button>
                 <button><MdSkipNext className='table-icon4' /></button>
             </div>
             </div>
             </div>
             </div>
+            
 )
 }
 
-export default EwbExtendedToday
-/*
-import React, { useEffect } from "react";
-import { SERVER_URL } from "../config/config.js";
-import "./biltyReport.css";
-import ReportTable from "./ReportTable";
-import Popup from 'reactjs-popup';
-
-
-function EwbExtensionReport({ sessionObject }) {
-
-    
-    const [checkedList, setCheckedList] = React.useState([]);
-
-  const columns = React.useMemo(
-    () => [
-      {
-        Header: "Eway Bill No",
-        accessor: "eway_bill_no",
-        width: "130px",
-        minWidth: "10px",
-        canFilter: true,
-      },
-      {
-        Header: "Eway Bill Date",
-        accessor: "date",
-        width: "100px",
-        minWidth: "50px",
-        canFilter: true,
-      },
-      {
-        Header: "Error",
-        accessor: "error",
-        width: "120px",
-        minWidth: "10px",
-        canFilter: true,
-      },
-      {
-        Header: "Eway Bill Amount",
-        accessor: "amount",
-        width: "120px",
-        minWidth: "10px",
-        canFilter: true,
-      },
-      {
-        Header: "Extended Times",
-        accessor: "extended_times",
-        width: "50px",
-        minWidth: "10px",
-        canFilter: true,
-      },
-      {
-        Header: " Bilty No",
-        accessor: "bilty_no",
-        width: "100px",
-        minWidth: "10px",
-        canFilter: true,
-      },
-      {
-        Header: "Bilty Date",
-        accessor: "bilty_date",
-        width: "120px",
-        minWidth: "10px",
-        canFilter: true,
-      },
-      {
-        Header: "From Station",
-        accessor: "from_station",
-        width: "125px",
-        minWidth: "10px",
-        canFilter: true,
-      },
-      {
-        Header: "To Station",
-        accessor: "to_station",
-        width: "125px",
-        minWidth: "10px",
-        canFilter: true,
-      },
-      {
-        Header: "Consignor Party",
-        accessor: "consignor_name",
-        width: "150px",
-        minWidth: "10px",
-        canFilter: true,
-      },
-      {
-        Header: "Consignee Party",
-        accessor: "consignee_name",
-        width: "150px",
-        minWidth: "10px",
-        canFilter: true,
-      },
-      {
-        Header: "Truck No",
-        accessor: "vehicle_no",
-        width: "120px",
-        minWidth: "10px",
-        canFilter: true,
-      },
-      // {
-      //   Header: "Cewb No",
-      //   accessor: "cewb_no",
-      //   canFilter: true,
-      // },
-    ],
-    []
-  );
-
-  // We'll start our table without any data
-  const [data, setData] = React.useState([]);
-  const [isStop, setIsStop] = React.useState(false);
-  const [popupPassword, setPopupPassword] = React.useState("");
-  const [isPasswordCorrect, setIsPasswordCorrect] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
-  const [pageCount, setPageCount] = React.useState(0);
-  const [responseFromServer, setResponseFromServer] = React.useState({});
-  const [submitted, setSubmitted] = React.useState(false);
-  const fetchIdRef = React.useRef(0);
-  const sortIdRef = React.useRef(0);
-
-  const fetchData = React.useCallback(
-    async ({ pageSize, pageIndex, sortBy, customFilters }) => {
-      // This will get called when the table needs new data
-      // You could fetch your data from literally anywhere,
-      // even a server. But for this example, we'll just fake it.
-
-      // Give this fetch an ID
-      const fetchId = ++fetchIdRef.current;
-      console.log("12323", sortBy, customFilters, fetchId);
-      // Set the loading state
-      setLoading(true);
-
-      if (fetchId === fetchIdRef.current) {
-        // customFilters.created_from = String(
-        //   sessionObject.sessionVariables.branch_id
-        // );
-        let response = await fetch(SERVER_URL + "/report/eway_bill_extension", {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            paginate: { number_of_rows: pageSize, page_number: pageIndex + 1 },
-            sort_fields: sortBy,
-            filter_fields: customFilters,
-          }),
-        });
-        let resp = await response.json();
-        if (resp["data"] && "total_rows" in resp) {
-          setData(resp["data"]);
-          setPageCount(Math.ceil(resp["total_rows"] / pageSize));
-        }
-        setLoading(false);
-      }
-      // We'll even set a delay to simulate a server here
-      //   setTimeout(() => {
-      //     // Only update the data if this is the latest fetch
-      //     if (fetchId === fetchIdRef.current) {
-      //       const startRow = pageSize * pageIndex;
-      //       const endRow = startRow + pageSize;
-      //     //   setData(serverData.slice(startRow, endRow));
-      //       console.log("data", data);
-      //       // Your server could send back total page count.
-      //       // For now we'll just fake it, too
-      //       setPageCount(Math.ceil(serverData.length / pageSize));
-
-      //       setLoading(false);
-      //     }
-      //   }, 1000);
-    },
-    []
-  );
-
-  const handleCheckboxChange = (row) => {
-    const val = row[0].value;
-    const ind = checkedList.indexOf(val);
-    let tempChecked = [...checkedList];
-    if(ind > -1) {
-        tempChecked.splice(ind, 1);
-    }
-    else {
-        tempChecked.push(val);
-    }
-    setCheckedList(tempChecked);
-  }
-
-  const handleSelectAll = () => {
-      let tempChecked = [];
-      data.forEach((row) => {
-          tempChecked.push(row.eway_bill_no);
-      })
-      setCheckedList(tempChecked);
-  }
-
-  const handleDeselectAll = () => {
-      setCheckedList([]);
-  }
-
-  const getSelectAllValue = () => {
-      const isAllSelected = checkedList.length == data.length;
-      return isAllSelected;
-  }
-
-  const isChecked = (row) => {
-      const val = row[0].value;
-      return (checkedList.indexOf(val) > -1);
-  }
-
-  const handleStopClick = async () => {
-      const url = SERVER_URL + "/ewb/remove_godown_entry"
-
-      const dataToSend = checkedList;
-
-      const resp = await fetch(url, {
-          method: "POST",
-          headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dataToSend),
-      })
-
-      
-      if(!resp.ok) {
-        setResponseFromServer({
-            flag: 0,
-            details: "Something went wrong",
-        })
-        return;
-      }
-
-      const respDetails = await resp.json();
-    //   console.log(respDetails);
-      setSubmitted(true);
-      setResponseFromServer(respDetails);
-  }
-
-  useEffect(() => {
-      console.log(responseFromServer);
-  })
-
-  return (
-    <div className="report-bilty">
-      <div className="form-header">Ewb Extension Report</div>
-      <div>
-            <Popup
-                open={isStop}
-                modal
-                closeOnDocumentClick={false}
-            >
-                 {(close) => (
-              <div className="pop-up-container">
-                <div className="pop-up-header">Are you sure want to delete?</div>
-                <div className='pop-up-fields'>
-                    <div className='pop-up-field'>
-                        <div className="pop-up-field-value">({checkedList.length} entries will be affected) </div>
-                    </div>
-                    <br/>
-                    <div className='pop-up-field'>
-                        <div className="pop-up-field-label">Password: </div>
-                        <input 
-                            type="password" 
-                            className="form-input" 
-                            value={popupPassword}
-                            onChange={(e) => {
-                                setPopupPassword(e.target.value)
-                            }}
-                            onKeyPress={(e) => {
-                                if(e.key == "Enter") {
-                                    if(popupPassword.toLowerCase() === "stop5661") {
-                                        setIsPasswordCorrect(true);
-                                    }
-                                }
-                                // if(e.key == "Enter") {
-                                //     const url = SERVER_URL + "/login/access-token";
-                                //     const dataToSend = {
-                                //         username: sessionObject.sessionVariables.user_name,
-                                //         password: popupPassword,
-                                //     }
-
-                                //     const resp = await fetch(url, {
-                                //         method: "POST",
-                                //         headers: {
-                                //             Accept: "application/json",
-                                //             "Content-Type": "application/x-www-form-urlencoded",
-                                //         },
-                                //         body: new URLSearchParams(dataToSend),
-                                //         // body: JSON.stringify(dataToSend),
-                                //     })
-
-                                //     if(resp.ok) {
-                                //         const loginData = await resp.json();
-                                //         if("access_token" in loginData) {
-                                //             setIsPasswordCorrect(true);
-                                //             document.getElementById("yes_button").focus();
-                                //         }
-                                //     }
-                                // }
-                            }}
-                        />
-                    </div>
-                </div>
-                <div className="pop-up-actions">
-                  <button
-                    className="pop-up-button"
-                    id="yes_button"
-                    onClick={() => {
-                        handleStopClick();
-                        setIsStop(false);
-                        setIsPasswordCorrect(false);
-                        setPopupPassword("");
-                        close();
-                    }}
-                    disabled={!isPasswordCorrect}
-                  >
-                    Yes
-                  </button>
-                  <button
-                    className="pop-up-button"
-                    // autoFocus={true}
-                    id="no_button"
-                    onClick={() => {
-                      setIsStop(false);
-                      setIsPasswordCorrect(false);
-                      setPopupPassword("");
-                      close();
-                    }}
-                  >
-                    No
-                  </button>
-                </div>
-              </div>
-            )}
-            </Popup>
-      </div>
-
-      <div>
-                <Popup
-                    open={submitted}
-                    modal
-                    closeOnDocumentClick={false}
-                >
-                    {(close) => (
-                        <div className="pop-up-container">
-                            <div className="pop-up-header">
-                                {responseFromServer.flag == 1 ?
-                                    <div> Success :) </div>
-                                    : <div> Failed ): </div>
-                                }
-                                <div>
-                                    <a className="pop-up-close btn" onClick={() => {
-                                        close();
-                                        window.location.reload();
-                                    }}>
-                                        &times;
-                                    </a>
-                                </div>
-                            </div>
-                            <div className='pop-up-fields'>
-                                {
-                                    Object.keys(responseFromServer).map(key => {
-                                        return (
-                                            key == "flag" ? <div /> :
-                                            <div className='pop-up-field'>
-                                                <div className="pop-up-field-label">{key} : </div>
-                                                <div className="pop-up-field-value">
-                                                    {responseFromServer[key]}
-                                                </div>
-                                            </div>
-                                        )
-                                    })
-                                }
-                            </div>
-                            
-                            <div className="pop-up-actions">
-                                <button
-                                    className="pop-up-button"
-                                    onClick={() => {
-                                        // setSubmitted(false);
-                                        // setResponseFromServer({});
-                                        close();
-                                        window.location.reload();
-                                    }}
-                                >
-                                    Okay
-                                </button>
-                            </div>
-                        </div>
-                    )}
-                </Popup>
-            </div>
-
-      <div className="report-bilty-table-container">
-        <ReportTable
-          checkbox={true}
-          handleCheckboxChange={handleCheckboxChange}
-          checkedList={checkedList}
-          columns={columns}
-          data={data}
-          fetchData={fetchData}
-          loading={loading}
-          pageCount={pageCount}
-          isChecked={isChecked}
-          getSelectAllValue={getSelectAllValue}
-          handleSelectAll={handleSelectAll}
-          handleDeselectAll={handleDeselectAll}
-        />
-        <div className="form-footer">
-            <button onClick={() => setIsStop(true)}>
-                Stop
-            </button>
-        </div> 
-      </div> 
-    </div>
-  );
-}
-
-export default EwbExtensionReport;
-*/
+export default EwbExpiringToday

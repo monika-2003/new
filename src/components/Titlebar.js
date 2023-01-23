@@ -1,8 +1,8 @@
 import React from 'react';
 import { useState } from 'react';
 import './Titlebar.css';
-import {IoMdContact} from 'react-icons/io'
-
+import {IoMdContact} from 'react-icons/io';
+import {logout} from './../config/config.js'; 
 const Titlebar = () => {
 
   const [show, setShow] = useState(false);
@@ -22,7 +22,7 @@ const Titlebar = () => {
         <p>Dhrumil Punjabi</p>
         <p className='email'>dhrumilpunjabi.dp@gmail.com</p>
 
-        <button className='popup-btn'>Log Out</button>
+        <button className='popup-btn' onClick={logout("login")}>Log Out</button>
       </div>
 
         <h1 className='title'>SARAL eWAY</h1>
