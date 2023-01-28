@@ -171,7 +171,8 @@ useEffect(()=>{
       "consignor_name":"",
       "consignee_name":"",
       "cewb_no":"",
-      "truck_number":""
+      "truck_number":"",
+      "manually_stopped":1
     })
     
     const fieldsOfFilters = ["ewaybill_no","ewb_date","amount","consignor_place","consignee_place","consignor_name","consignee_name","cewb_no","truck_number"]
@@ -225,7 +226,7 @@ useEffect(()=>{
     },[nameField]);
 
     const handleChange = (e) => {
-      setNameField({...nameField, [e.target.name]: e.target.value,"manually_stopped":1});
+      setNameField({...nameField, [e.target.name]: e.target.value, "manually_stopped":1});
     }
     useEffect(()=>{
   

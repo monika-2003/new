@@ -35,7 +35,7 @@ useEffect(()=>{
         "sort_fields": [
           {}
         ],
-        "filter_fields": {"valid_upto":new Date().toLocaleDateString()+" 23:59:00","manually_stopped":0}
+        "filter_fields": {"valid_upto":new Date().toLocaleDateString()+" 23:59:00"}
       })
     })
 
@@ -171,7 +171,9 @@ useEffect(()=>{
       "consignor_name":"",
       "consignee_name":"",
       "cewb_no":"",
-      "truck_number":""
+      "truck_number":"",
+      "manually_stopped":0,
+      "valid_upto":new Date().toLocaleString()+" 23:59:00"
     })
     
     const fieldsOfFilters = ["ewaybill_no","ewb_date","amount","consignor_place","consignee_place","consignor_name","consignee_name","cewb_no","truck_number"]
