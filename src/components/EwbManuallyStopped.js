@@ -35,7 +35,7 @@ useEffect(()=>{
         "sort_fields": [
           {}
         ],
-        "filter_fields": {"valid_upto":new Date().toLocaleDateString()+" 23:59:00","manually_stopped":0}
+        "filter_fields": {"manually_stopped":1}
       })
     })
 
@@ -225,7 +225,7 @@ useEffect(()=>{
     },[nameField]);
 
     const handleChange = (e) => {
-      setNameField({...nameField, [e.target.name]: e.target.value});
+      setNameField({...nameField, [e.target.name]: e.target.value,"manually_stopped":1});
     }
     useEffect(()=>{
   
@@ -241,7 +241,7 @@ useEffect(()=>{
               "Accept":"application/json",
               "Authorization":ACCESS_TOKEN
           },
-          body:stopResult
+          body:JSON.stringify(stopResult)
         })
           const data = await rs.json();
           console.log("stop:",data,stopResult)

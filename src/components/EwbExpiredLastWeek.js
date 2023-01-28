@@ -241,7 +241,7 @@ useEffect(()=>{
               "Accept":"application/json",
               "Authorization":ACCESS_TOKEN
           },
-          body:stopResult
+          body:JSON.stringify(stopResult)
         })
           const data = await rs.json();
           console.log("stop:",data,stopResult)

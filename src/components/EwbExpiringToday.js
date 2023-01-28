@@ -231,8 +231,9 @@ useEffect(()=>{
   
       
     },[refresh])
-    const stop = () => {
-  
+    const stop = (e) => {
+      console.log("array",stopResult )
+      // console.log("here:",[JSON.parse(stopResult)])
       const fetchData = async () => {
         const rs = await fetch(SERVER_URL+"/eway/eway_bill_stop/", {
           method:"PUT",
@@ -241,7 +242,7 @@ useEffect(()=>{
               "Accept":"application/json",
               "Authorization":ACCESS_TOKEN
           },
-          body:stopResult
+          body:JSON.stringify(stopResult)
         })
           const data = await rs.json();
           console.log("stop:",data,stopResult)
@@ -259,7 +260,7 @@ useEffect(()=>{
 
               <div className='align-btns'>
                 <Buttons name = "Refresh" onClick={()=>setRefresh(true)}/>
-                <Buttons name = "Stop"  onClick={stop} />
+                <button className='btn' onClick={stop}>Stop</button>
               </div>
               
             <Background/>
