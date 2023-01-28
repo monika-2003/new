@@ -13,37 +13,60 @@ import moment from 'moment'
 import Card from './Card'
 import Background from "./Background.js";
 const EwbExpiringToday = () => {
-const [result,setResult]=useState({})
-const [stopResult,setStopResult]=useState(false)
-const [ch,setCh]=useState([])
+const [result,setResult]=useState([])
+const [stopResult,setStopResult]=useState([])
 const [refresh,setRefresh]=useState(false);
-  useEffect(()=>{
-    const fetchData = async () => {
-      var response = await fetch(SERVER_URL+"/eway/db/", {
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-          "Accept":"application/json",
-          "Authorization":ACCESS_TOKEN
+const [checkState, setCheckState] = useState([]);
+var data=[]
+useEffect(()=>{
+  const fetchData = async () => {
+    var response = await fetch(SERVER_URL+"/eway/db/", {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Accept":"application/json",
+        "Authorization":ACCESS_TOKEN
+      },
+      body:JSON.stringify({
+        "paginate": {
+          "number_of_rows": 100,
+          "page_number": 1
         },
-        body:JSON.stringify({
-          "paginate": {
-            "number_of_rows": 100,
-            "page_number": 1
-          },
-          "sort_fields": [
-            {}
-          ],
-          "filter_fields": {"valid_upto":new Date().toLocaleDateString()+" 23:59:00","manually_stopped":0}
-        })
+        "sort_fields": [
+          {}
+        ],
+        "filter_fields": {"valid_upto":new Date().toLocaleDateString()+" 23:59:00","manually_stopped":0}
       })
+    })
 
-      const data = await response.json();
-      setResult(data)
-      console.log("Here:",data,ACCESS_TOKEN,new Date().toLocaleDateString()+" 23:59:00")
-    }
-    fetchData();
-  },[]);
+    data = await response.json();
+    data = new Map(Object.entries(data.data))
+    setResult(data)
+    console.log("Here:",data,ACCESS_TOKEN,new Date().toLocaleDateString()+" 23:59:00")
+    setCheckState(
+      //console.log("eway:",[...data.values()])
+      [...data.values()].map(eway => {   
+        console.log("eway",eway)
+      //data.data
+      //checkState.map(eway=>{
+        return {
+          select: false,
+          ewaybill_no: eway.ewaybill_no,
+          ewb_date:eway.ewb_date,
+          amount:eway.amount,
+          consignor_place:eway.consignor_place,
+          consignee_place:eway.consignee_place,
+          consignor_name:eway.consignor_name,
+          consignee_name:eway.consignee_name,
+          cewb_no:eway.cewb_no,
+          truck_number:eway.truck_number
+        };
+    })
+    );
+  }
+  fetchData();
+},[]);
+
    /*{
         Header: "Extended Times",
         accessor: "extended_times",
@@ -138,7 +161,7 @@ const [refresh,setRefresh]=useState(false);
         ],
         []
     );
-
+    
     const [nameField,setNameField] = useState({
       "ewaybill_no":"",
       "ewb_date":"",
@@ -150,18 +173,8 @@ const [refresh,setRefresh]=useState(false);
       "cewb_no":"",
       "truck_number":""
     })
-
+    
     const fieldsOfFilters = ["ewaybill_no","ewb_date","amount","consignor_place","consignee_place","consignor_name","consignee_name","cewb_no","truck_number"]
-    const getCh=(e)=>{
-      const {value,checked}=e.target
-      console.log(`${value} is ${checked}`)
-      if(checked){
-        setCh([...ch,value])
-      }else {
-        setCh(ch.filter((e)=>e!==value))
-      }         
-      console.log("data:",ch,JSON.stringify(ch))
-    }
     useEffect(()=>{
       const fetchData = async () => {
         const response = await fetch(SERVER_URL+"/eway/db/", {
@@ -182,21 +195,43 @@ const [refresh,setRefresh]=useState(false);
             "filter_fields": nameField
           })
         })
-        const data = await response.json();
+        data=await response.json()
+        data = new Map(Object.entries(data.data))
         setResult(data)
         console.log("janvi_data",data,ACCESS_TOKEN)
+        setCheckState(
+          //console.log("eway:",[...data.values()])
+          [...data.values()].map(eway => {   
+            console.log("eway",eway)
+          //data.data
+          //checkState.map(eway=>{
+            return {
+              select: false,
+              ewaybill_no: eway.ewaybill_no,
+              ewb_date:eway.ewb_date,
+              amount:eway.amount,
+              consignor_place:eway.consignor_place,
+              consignee_place:eway.consignee_place,
+              consignor_name:eway.consignor_name,
+              consignee_name:eway.consignee_name,
+              cewb_no:eway.cewb_no,
+              truck_number:eway.truck_number
+            };
+        })
+        );
       }
       fetchData()
+      
     },[nameField]);
 
     const handleChange = (e) => {
-      setNameField({...nameField, [e.target.name]: e.target.value,"valid_upto":new Date().toLocaleDateString()+" 23:59:00","manually_stopped":0});
+      setNameField({...nameField, [e.target.name]: e.target.value});
     }
     useEffect(()=>{
   
       
     },[refresh])
-    useEffect(()=>{
+    const stop = () => {
   
       const fetchData = async () => {
         const rs = await fetch(SERVER_URL+"/eway/eway_bill_stop/", {
@@ -206,13 +241,13 @@ const [refresh,setRefresh]=useState(false);
               "Accept":"application/json",
               "Authorization":ACCESS_TOKEN
           },
-          body:JSON.stringify(ch)
+          body:stopResult
         })
           const data = await rs.json();
-          console.log("janvi_data",data)
+          console.log("stop:",data,stopResult)
         }
           fetchData()
-    },[stopResult])
+    }
       return (
         <div className='ewb-expiring-today'>
             <Titlebar />
@@ -224,7 +259,7 @@ const [refresh,setRefresh]=useState(false);
 
               <div className='align-btns'>
                 <Buttons name = "Refresh" onClick={()=>setRefresh(true)}/>
-                <Buttons name = "Stop"  onClick={()=>{setStopResult(stopResult=>!stopResult)}} />
+                <Buttons name = "Stop"  onClick={stop} />
               </div>
               
             <Background/>
@@ -247,7 +282,23 @@ const [refresh,setRefresh]=useState(false);
                 <td>
                 <input 
                     type='checkbox'
-                    />
+                    value="all"
+                    onChange={event => {
+                      let checked = event.target.checked;
+                      setCheckState(
+                        checkState.map(data => {
+                          data.select = checked;
+                          if(data.select == true && !stopResult.includes(data.ewaybill_no))
+                            setStopResult(stopResult=>[...stopResult,data.ewaybill_no])
+                          else if(data.select==false && stopResult.includes(data.ewaybill_no))
+                            setStopResult(stopResult=>[...stopResult.slice(data.ewaybill_no)])
+                          console.log("stopResult:",stopResult,data.select)
+                          return data;
+                        })
+                      );
+                      console.log("jer:",checkState);
+                    }}
+                />
                 </td>
             {
               fieldsOfFilters.map((Name)=> 
@@ -257,14 +308,34 @@ const [refresh,setRefresh]=useState(false);
             </thead>
             <tbody>
             {/*moment({hours:0}).diff(moment(eway.valid_upto,"D-MM-YYYY"),"days")>=7 && moment({hours:0}).diff(moment(eway.valid_upto,"D-MM-YYYY"),"days")<=14?*/}
-                  {result["data"] && result["data"].map(eway => {
+                  {checkState.map(eway => {
                   return (
-                  <tr className='heading-row'>
+                  <tr className='heading-row' key={eway.ewaybill_no}>
                       <td>
-                        <input type='checkbox' value={eway.ewaybill_no} onChange={(e)=>{getCh(e)}}/>
+                        <input type='checkbox' value={eway.ewaybill_no} 
+                        onChange={event => {
+                          let checked = event.target.checked;
+                          console.log("jer:",checkState);
+                          setCheckState(
+                            checkState.map(data => {
+                              if (eway.ewaybill_no === data.ewaybill_no) {
+                                data.select = checked;
+                                if(data.select == true && !stopResult.includes(data.ewaybill_no))
+                                  setStopResult(stopResult=>[...stopResult,data.ewaybill_no])
+                                else if(data.select==false && stopResult.includes(data.ewaybill_no))
+                                  setStopResult(stopResult=>{return stopResult.filter(d=>d.ewaybill_no!==data.ewaybill_no)})
+                                console.log("stopResult",stopResult)
+                              }
+                              return data;
+                            })
+                          );
+                          console.log("jer:",checkState);
+                        }}
+                        checked={eway.select}
+                        />
                       </td>
                       <td>{eway.ewaybill_no}</td>
-                      <td>{new Date(eway.ewb_date).toLocaleString().split(",")[0]}</td>
+                      <td>{eway.ewb_date}</td>
                       <td>{eway.amount}</td>
                       <td>{eway.consignor_place}</td>
                       <td>{eway.consignee_place}</td>
@@ -282,7 +353,7 @@ const [refresh,setRefresh]=useState(false);
             <div className='last-row'>
                 <button><BiSkipPrevious className='table-icon1' /></button>
                 <button><BiRightArrow className='table-icon2' /></button>
-                <div>{result.total_rows}</div>
+                <div>{result.length}</div>
                 <button><BiLeftArrow className='table-icon3' /></button>
                 <button><MdSkipNext className='table-icon4' /></button>
             </div>

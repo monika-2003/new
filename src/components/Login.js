@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import Background from "./Background";
 import "./Login.css";
-import { Link, useNavigate } from 'react-router-dom';
+import { json, Link, useNavigate } from 'react-router-dom';
 import { token } from "../config/config";
 class Temp extends Component {
   constructor() {
@@ -27,12 +27,18 @@ class Temp extends Component {
       response.json().then((result)=>{
         console.warn("result",result)
         localStorage.setItem('login',JSON.stringify({
-          login:true,
+          is_login:true,
           store:result.access_token
         }))
+        const x=JSON.parse(localStorage.getItem('login'))
+        if(!x.is_login) {
+          this.setState({login:false})
+          this.props.navigate("/")
+        }
+        else
+          this.setState({login:true})
       })
     })
-    this.setState({login:true})
   }
   render() {
 
