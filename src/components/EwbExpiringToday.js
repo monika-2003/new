@@ -35,14 +35,14 @@ useEffect(()=>{
         "sort_fields": [
           {}
         ],
-        "filter_fields": {"valid_upto":new Date().toLocaleDateString()+" 23:59:00"}
+        "filter_fields": {"valid_upto":new Date().getFullYear() + '-' + new Date().getMonth() + 1<10?'0'+new Date().getMonth() + 1:new Date().getMonth() + 1 + '-' + new Date().getDate()+" 23:59:00"}
       })
     })
 
     data = await response.json();
     data = new Map(Object.entries(data.data))
     setResult(data)
-    console.log("Here:",data,ACCESS_TOKEN,new Date().toLocaleDateString()+" 23:59:00")
+    console.log("Here:",data,ACCESS_TOKEN,new Date().getFullYear() + '-' + new Date().getMonth() + 1<10?'0'+new Date().getMonth() + 1:new Date().getMonth() + 1 + '-' + new Date().getDate()+" 23:59:00")
     setCheckState(
       //console.log("eway:",[...data.values()])
       [...data.values()].map(eway => {   
@@ -173,7 +173,7 @@ useEffect(()=>{
       "cewb_no":"",
       "truck_number":"",
       "manually_stopped":0,
-      "valid_upto":new Date().toLocaleString()+" 23:59:00"
+      "valid_upto":new Date().getFullYear() + '-' + new Date().getMonth() + 1<10?'0'+new Date().getMonth() + 1:new Date().getMonth() + 1 + '-' + new Date().getDate()+" 23:59:00"
     })
     
     const fieldsOfFilters = ["ewaybill_no","ewb_date","amount","consignor_place","consignee_place","consignor_name","consignee_name","cewb_no","truck_number"]

@@ -35,7 +35,7 @@ useEffect(()=>{
         "sort_fields": [
           {}
         ],
-        "filter_fields": {"manually_stopped":0}
+        "filter_fields": {"last_extended":new Date().getFullYear() + '-' + new Date().getMonth() + 1<10?'0'+new Date().getMonth() + 1:new Date().getMonth() + 1 + '-' + new Date().getDate()+" 16:00:00"}
       })
     })
 
@@ -172,7 +172,7 @@ useEffect(()=>{
       "consignee_name":"",
       "cewb_no":"",
       "truck_number":"",
-      "manually_stopped":0
+      "last_extended":new Date().getFullYear() + '-' + new Date().getMonth() + 1<10?'0'+new Date().getMonth() + 1:new Date().getMonth() + 1 + '-' + new Date().getDate()+" 16:00:00"
     })
     
     const fieldsOfFilters = ["ewaybill_no","ewb_date","amount","consignor_place","consignee_place","consignor_name","consignee_name","cewb_no","truck_number"]
