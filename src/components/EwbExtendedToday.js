@@ -15,7 +15,7 @@ import Background from "./Background.js";
 const EwbExtendedToday = () => {
 const [result,setResult]=useState([])
 const [stopResult,setStopResult]=useState([])
-const [refresh,setRefresh]=useState(false);
+
 const [checkState, setCheckState] = useState([]);
 var data=[]
 useEffect(()=>{
@@ -228,10 +228,6 @@ useEffect(()=>{
     const handleChange = (e) => {
       setNameField({...nameField, [e.target.name]: e.target.value});
     }
-    useEffect(()=>{
-  
-      
-    },[refresh])
     const stop = () => {
   
       const fetchData = async () => {
@@ -259,7 +255,6 @@ useEffect(()=>{
               <Card />
 
               <div className='align-btns'>
-                <Buttons name = "Refresh" onClick={()=>setRefresh(true)}/>
                 <Buttons name = "Stop"  onClick={stop} />
               </div>
               
@@ -336,7 +331,7 @@ useEffect(()=>{
                         />
                       </td>
                       <td>{eway.ewaybill_no}</td>
-                      <td>{eway.ewb_date}</td>
+                      <td>{eway.ewb_date.slice(0,10)}</td>
                       <td>{eway.amount}</td>
                       <td>{eway.consignor_place}</td>
                       <td>{eway.consignee_place}</td>
