@@ -15,7 +15,9 @@ import Background from "./Background.js";
 const EwbExtendedToday = () => {
 const [result,setResult]=useState([])
 const [stopResult,setStopResult]=useState([])
-
+let date=new Date()
+let dateMDY = date.toLocaleDateString();
+ 
 const [checkState, setCheckState] = useState([]);
 var data=[]
 useEffect(()=>{
@@ -35,14 +37,14 @@ useEffect(()=>{
         "sort_fields": [
           {}
         ],
-        "filter_fields": {"last_extended":new Date().getFullYear() + '-' + new Date().getMonth() + 1<10?'0'+new Date().getMonth() + 1:new Date().getMonth() + 1 + '-' + new Date().getDate()+" 16:00:00"}
+        "filter_fields": {"last_extended":dateMDY}
       })
     })
 
     data = await response.json();
     data = new Map(Object.entries(data.data))
     setResult(data)
-    console.log("Here:",data,ACCESS_TOKEN,new Date().toLocaleDateString()+" 23:59:00")
+    console.log("Here:",data,ACCESS_TOKEN,dateMDY)
     setCheckState(
       //console.log("eway:",[...data.values()])
       [...data.values()].map(eway => {   
@@ -172,7 +174,7 @@ useEffect(()=>{
       "consignee_name":"",
       "cewb_no":"",
       "truck_number":"",
-      "last_extended":new Date().getFullYear() + '-' + new Date().getMonth() + 1<10?'0'+new Date().getMonth() + 1:new Date().getMonth() + 1 + '-' + new Date().getDate()+" 16:00:00"
+      "last_extended":dateMDY
     })
     
     const fieldsOfFilters = ["ewaybill_no","ewb_date","amount","consignor_place","consignee_place","consignor_name","consignee_name","cewb_no","truck_number"]

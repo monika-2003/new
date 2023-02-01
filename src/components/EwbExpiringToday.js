@@ -9,13 +9,14 @@ import {BiSkipPrevious} from 'react-icons/bi'
 import {BiRightArrow} from 'react-icons/bi'
 import {BiLeftArrow} from 'react-icons/bi'
 import Buttons from "./Buttons.js";
-import moment from 'moment'
 import Card from './Card'
 import Background from "./Background.js";
 const EwbExpiringToday = () => {
 const [result,setResult]=useState([])
 const [stopResult,setStopResult]=useState([])
-
+let date=new Date()
+let dateMDY = `${date.getFullYear()}-${(date.getMonth() + 1)<10?('0'+(date.getMonth() + 1)):date.getMonth() + 1}-${date.getDate()<10?('0'+(date.getDay())):date.geDay()}`+" 23:59:00";
+    
 const [checkState, setCheckState] = useState([]);
 var data=[]
 useEffect(()=>{
@@ -35,14 +36,14 @@ useEffect(()=>{
         "sort_fields": [
           {}
         ],
-        "filter_fields": {"valid_upto":new Date().getFullYear() + '-' + new Date().getMonth() + 1<10?'0'+new Date().getMonth() + 1:new Date().getMonth() + 1 + '-' + new Date().getDate()+" 23:59:00"}
+        "filter_fields": {"valid_upto":dateMDY}
       })
     })
 
     data = await response.json();
     data = new Map(Object.entries(data.data))
     setResult(data)
-    console.log("Here:",data,ACCESS_TOKEN,new Date().getFullYear() + '-' + new Date().getMonth() + 1<10?'0'+new Date().getMonth() + 1:new Date().getMonth() + 1 + '-' + new Date().getDate()+" 23:59:00")
+    console.log("Here:",data,dateMDY,(new Date()).toLocaleDateString(),(new Date().getFullYear().toString() + '-' + new Date().getMonth() + 1<10?'0'+(new Date().getMonth() + 1).toString():(new Date().getMonth() + 1).toString() + '-' + (new Date().getDate()).toString())+" 23:59:00")
     setCheckState(
       //console.log("eway:",[...data.values()])
       [...data.values()].map(eway => {   
@@ -173,7 +174,7 @@ useEffect(()=>{
       "cewb_no":"",
       "truck_number":"",
       "manually_stopped":0,
-      "valid_upto":new Date().getFullYear() + '-' + new Date().getMonth() + 1<10?'0'+new Date().getMonth() + 1:new Date().getMonth() + 1 + '-' + new Date().getDate()+" 23:59:00"
+      "valid_upto":dateMDY
     })
     
     const fieldsOfFilters = ["ewaybill_no","ewb_date","amount","consignor_place","consignee_place","consignor_name","consignee_name","cewb_no","truck_number"]
