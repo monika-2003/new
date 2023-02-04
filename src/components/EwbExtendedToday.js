@@ -42,6 +42,10 @@ useEffect(()=>{
     })
 
     data = await response.json();
+    console.log("datadata", data)
+    if (!("data" in data)){
+      return;
+    }
     data = new Map(Object.entries(data.data))
     setResult(data)
     console.log("Here:",data,ACCESS_TOKEN,dateMDY)
@@ -199,6 +203,10 @@ useEffect(()=>{
           })
         })
         data=await response.json()
+        console.log("datadata", data)
+        if (!("data" in data)){
+          return;
+        }
         data = new Map(Object.entries(data.data))
         setResult(data)
         console.log("janvi_data",data,ACCESS_TOKEN)
