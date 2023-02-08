@@ -55,6 +55,7 @@ export default function Login({ sessionObject }) {
       setPageMode("error");
       setPopupError("Invalid credentials");
     } else if (resp.access_token) {
+      localStorage.setItem("login",resp.access_token)
       navigate("/ewb-expiring-today");
     }
 

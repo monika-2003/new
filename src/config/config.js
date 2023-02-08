@@ -12,9 +12,9 @@ const getLocalFlag = () => {
     }
   }
 var SERVER_URL = ""
-const token=JSON.parse(localStorage.getItem('login'))
+const token=localStorage.getItem('login')
 if(token)
-  var ACCESS_TOKEN = "Bearer "+token.store
+  var ACCESS_TOKEN = "Bearer "+token
 if (getLocalFlag()){
     console.log("in if")
     SERVER_URL="http://43.252.197.60:8001"
