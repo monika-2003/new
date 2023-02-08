@@ -15,7 +15,7 @@ const EwbExpiringToday = () => {
 const [result,setResult]=useState([])
 const [stopResult,setStopResult]=useState([])
 let date=new Date()
-let dateMDY = `${date.getFullYear()}-${(date.getMonth() + 1)<10?('0'+(date.getMonth() + 1)):date.getMonth() + 1}-${date.getDate()<10?('0'+(date.getDay())):date.geDay()}`+" 23:59:00";
+let dateMDY = `${date.getFullYear()}-${(date.getMonth() + 1)<10?('0'+(date.getMonth() + 1)):date.getMonth() + 1}-${date.getDate()<10?('0'+(date.getDate())):date.getDate()}`+" 23:59:00";
     
 const [checkState, setCheckState] = useState([]);
 var data=[]
@@ -28,16 +28,6 @@ useEffect(()=>{
         "Accept":"application/json",
         "Authorization":ACCESS_TOKEN
       },
-      body:JSON.stringify({
-        "paginate": {
-          "number_of_rows": 100,
-          "page_number": 1
-        },
-        "sort_fields": [
-          {}
-        ],
-        "filter_fields": {"valid_upto":dateMDY}
-      })
     })
 
     data = await response.json();
