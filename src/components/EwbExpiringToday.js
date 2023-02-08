@@ -28,6 +28,16 @@ useEffect(()=>{
         "Accept":"application/json",
         "Authorization":ACCESS_TOKEN
       },
+      body:JSON.stringify({
+        "paginate": {
+          "number_of_rows": 100,
+          "page_number": 1
+        },
+        "sort_fields": [
+          {}
+        ],
+        "filter_fields": {valid_upto:dateMDY,manually_stopped:0}
+      })
     })
 
     data = await response.json();
