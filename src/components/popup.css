@@ -1,0 +1,104 @@
+.pop-up-container {
+    background-color: white;
+    border: black double 5px;
+    border-radius: var(--border-radius);
+    padding: 15px;
+
+}
+.pop-up-header {
+    /* margin: 15px; */
+    background-color: var(--bg);
+    padding-bottom: 10px;
+    border-bottom: black double 3px;
+    /* padding: 5px; */
+    font-size: larger;
+    font-weight: bolder;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    color: #36A1FB;
+}
+
+.pop-up-content {
+    padding: 15px;
+    font-size: medium;
+    border-bottom: rgb(207, 207, 207) double 3px;
+    color: #36A1FB;
+}
+.pop-up-close {
+    color: black;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 0px 6px;
+    border-radius: 50%;
+    text-align: center;
+    background-color: rgb(209, 209, 209);
+}
+
+/* .pop-up-button:hover,
+.pop-up-close:hover {
+    transition: all 0.3s ease-out;
+} */
+
+.pop-up-fields {
+    /* border: var(--border); */
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    justify-content: flex-start;
+    /* background-color: gold; */
+    /* width: 50%; */
+    /* padding: 10px; */
+    /* max-width: 300px; */
+    padding: 10px 30px 10px 30px;
+    
+
+}
+.pop-up-field {
+    display: flex;
+    flex-direction: row;
+    /* border: var(--border); */
+    align-items: flex-start;
+    justify-content: space-evenly;
+    padding-left: 5px;
+    padding-right: 5px;
+    
+}
+
+.pop-up-field-label {
+    font-family: roboto;
+    font-size: medium;
+    font-weight: bold;
+    /* width: 50%; */
+
+}
+
+.pop-up-field-value {
+    border-radius: 2px;
+    font-size: medium;
+    border: none;
+    /* background-color: whitesmoke; */
+    color: #36A1FB;
+    font-family: roboto;
+    /* margin-bottom: 10px; */
+    /* z-index: 1000 !important; */
+    /* border: var(--border); */
+}
+.pop-up-actions {
+    padding-top: 10px;
+    /* margin: 5px; */
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.pop-up-button{
+    background-color: #36A1FB;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}

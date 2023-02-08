@@ -30,6 +30,7 @@ useEffect(()=>{
         "Authorization":ACCESS_TOKEN
       },
       body:JSON.stringify({
+        "current_user":1,
         "paginate": {
           "number_of_rows": 100,
           "page_number": 1
