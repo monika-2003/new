@@ -251,7 +251,7 @@ useEffect(()=>{
       return (
         <div className='ewb-expiring-today'>
             <Titlebar />
-            <Navbar />
+            {/*<Navbar />*/}
     
             <div className='inner'>
     
@@ -334,7 +334,7 @@ useEffect(()=>{
                         />
                       </td>
                       <td>{eway.ewaybill_no}</td>
-                      <td>{eway.ewb_date.slice(0,10)}</td>
+                      <td>{eway.ewb_date.slice(0,10).split('-').reverse().join("/")}</td>
                       <td>{eway.amount}</td>
                       <td>{eway.consignor_place}</td>
                       <td>{eway.consignee_place}</td>

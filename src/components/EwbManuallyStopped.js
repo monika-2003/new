@@ -14,7 +14,7 @@ import Card from './Card'
 import Background from "./Background.js";
 const EwbManuallyStopped = () => {
 const [result,setResult]=useState([])
-const [stopResult,setStopResult]=useState([])
+const [startResult,setStartResult]=useState([])
 const [checkState, setCheckState] = useState([]);
 var data=[]
 useEffect(()=>{
@@ -225,33 +225,37 @@ useEffect(()=>{
     },[nameField]);
 
     const handleChange = (e) => {
-      setNameField({...nameField, [e.target.name]: e.target.value, "manually_stopped":1});
+      setNameField({...nameField, [e.target.name]: e.target.value});
     }
-    const stop = () => {
+    const start = (e) => {
   
       const fetchData = async () => {
-        const rs = await fetch(SERVER_URL+"/eway/eway_bill_stop/", {
+        const rs = await fetch(SERVER_URL+"/eway/eway_bill_start/", {
           method:"PUT",
           headers: {
             "Content-Type":"application/json",
               "Accept":"application/json",
               "Authorization":ACCESS_TOKEN
           },
-          body:JSON.stringify(stopResult)
+          body:JSON.stringify(startResult)
         })
           const data = await rs.json();
-          console.log("stop:",data,stopResult)
+          console.log("start:",data,startResult)
         }
           fetchData()
     }
       return (
         <div className='ewb-expiring-today'>
             <Titlebar />
-            <Navbar />
+            {/*<Navbar />*/}
     
             <div className='inner'>
     
               <Card />
+              
+              <div className='align-btns'>
+                <Buttons name = "Start"  onClick={start} />
+              </div>
             <Background/>
               <div className='wrapper'>
         <table className='table'>
@@ -278,11 +282,11 @@ useEffect(()=>{
                       setCheckState(
                         checkState.map(data => {
                           data.select = checked;
-                          if(data.select == true && !stopResult.includes(data.ewaybill_no))
-                            setStopResult(stopResult=>[...stopResult,data.ewaybill_no])
-                          else if(data.select==false && stopResult.includes(data.ewaybill_no))
-                            setStopResult(stopResult=>[...stopResult.slice(data.ewaybill_no)])
-                          console.log("stopResult:",stopResult,data.select)
+                          if(data.select == true && !startResult.includes(data.ewaybill_no))
+                            setStartResult(startResult=>[...startResult,data.ewaybill_no])
+                          else if(data.select==false && startResult.includes(data.ewaybill_no))
+                            setStartResult(startResult=>[...startResult.slice(data.ewaybill_no)])
+                          console.log("startResult:",startResult,data.select)
                           return data;
                         })
                       );
@@ -310,11 +314,11 @@ useEffect(()=>{
                             checkState.map(data => {
                               if (eway.ewaybill_no === data.ewaybill_no) {
                                 data.select = checked;
-                                if(data.select == true && !stopResult.includes(data.ewaybill_no))
-                                  setStopResult(stopResult=>[...stopResult,data.ewaybill_no])
-                                else if(data.select==false && stopResult.includes(data.ewaybill_no))
-                                  setStopResult(stopResult=>{return stopResult.filter(d=>d.ewaybill_no!==data.ewaybill_no)})
-                                console.log("stopResult",stopResult)
+                                if(data.select == true && !startResult.includes(data.ewaybill_no))
+                                  setStartResult(startResult=>[...startResult,data.ewaybill_no])
+                                else if(data.select==false && startResult.includes(data.ewaybill_no))
+                                  setStartResult(startResult=>{return startResult.filter(d=>d.ewaybill_no!==data.ewaybill_no)})
+                                console.log("startResult",startResult)
                               }
                               return data;
                             })
@@ -325,7 +329,7 @@ useEffect(()=>{
                         />
                       </td>
                       <td>{eway.ewaybill_no}</td>
-                      <td>{eway.ewb_date.slice(0,10)}</td>
+                      <td>{eway.ewb_date.slice(0,10).split('-').reverse().join("/")}</td>
                       <td>{eway.amount}</td>
                       <td>{eway.consignor_place}</td>
                       <td>{eway.consignee_place}</td>
