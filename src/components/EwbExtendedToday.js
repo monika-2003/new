@@ -16,7 +16,7 @@ const EwbExtendedToday = () => {
 const [result,setResult]=useState([])
 const [stopResult,setStopResult]=useState([])
 let date=new Date()
-let dateMDY = date.toLocaleDateString();
+let dateMDY = `${date.getFullYear()}-${(date.getMonth() + 1)<10?('0'+(date.getMonth() + 1)):date.getMonth() + 1}-${date.getDate()<10?('0'+(date.getDate())):date.getDate()}`; 
  
 const [checkState, setCheckState] = useState([]);
 var data=[]
