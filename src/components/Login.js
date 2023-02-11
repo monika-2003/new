@@ -63,12 +63,9 @@ export default function Login({ sessionObject }) {
     // let val_resp = await response.json();
 
     // Response manipulation
-    resp.branch_id = null;
-    resp.branch_name = null;
+    resp.username = username;
 
-    console.log("responsecvbn", resp);
-
-    // sessionObject.saveSessionVariableByObject(resp);
+    sessionObject.saveSessionVariableByObject(resp);
     // console.log("SESSION OBJ",sessionObject)
   };
 
