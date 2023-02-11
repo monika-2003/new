@@ -12,11 +12,11 @@ import Buttons from "./Buttons.js";
 import moment from 'moment'
 import Card from './Card'
 import Background from "./Background.js";
-const EwbExtendedToday = () => {
+const EwbExtendedToday = ({sessionObject})  => {
 const [result,setResult]=useState([])
 const [stopResult,setStopResult]=useState([])
 let date=new Date()
-let dateMDY = date.toLocaleDateString();
+let dateMDY = `${date.getFullYear()}-${(date.getMonth() + 1)<10?('0'+(date.getMonth() + 1)):date.getMonth() + 1}-${date.getDate()<10?('0'+(date.getDate())):date.getDate()}`; 
  
 const [checkState, setCheckState] = useState([]);
 var data=[]
@@ -30,6 +30,7 @@ useEffect(()=>{
         "Authorization":ACCESS_TOKEN
       },
       body:JSON.stringify({
+        "current_user":1,
         "paginate": {
           "number_of_rows": 100,
           "page_number": 1
@@ -257,8 +258,8 @@ useEffect(()=>{
     }
       return (
         <div className='ewb-expiring-today'>
-            <Titlebar />
-            <Navbar />
+            <Titlebar sessionObject={sessionObject}/>
+            {/*<Navbar />*/}
     
             <div className='inner'>
     
@@ -341,7 +342,7 @@ useEffect(()=>{
                         />
                       </td>
                       <td>{eway.ewaybill_no}</td>
-                      <td>{eway.ewb_date.slice(0,10)}</td>
+                      <td>{eway.ewb_date.slice(0,10).split('-').reverse().join("/")}</td>
                       <td>{eway.amount}</td>
                       <td>{eway.consignor_place}</td>
                       <td>{eway.consignee_place}</td>

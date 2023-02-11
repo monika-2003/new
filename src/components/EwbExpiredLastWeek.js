@@ -12,7 +12,7 @@ import Buttons from "./Buttons.js";
 import moment from 'moment'
 import Card from './Card'
 import Background from "./Background.js";
-const EwbExpiredLastWeek = () => {
+const EwbExpiredLastWeek = ({sessionObject}) => {
 const [result,setResult]=useState([])
 const [stopResult,setStopResult]=useState([])
 const [checkState, setCheckState] = useState([]);
@@ -254,8 +254,8 @@ useEffect(()=>{
     }
       return (
         <div className='ewb-expiring-today'>
-            <Titlebar />
-            <Navbar />
+            <Titlebar sessionObject={sessionObject}/>
+            {/*<Navbar />*/}
     
             <div className='inner'>
     
@@ -334,7 +334,7 @@ useEffect(()=>{
                         />
                       </td>
                       <td>{eway.ewaybill_no}</td>
-                      <td>{eway.ewb_date.slice(0,10)}</td>
+                      <td>{eway.ewb_date.slice(0,10).split('-').reverse().join("/")}</td>
                       <td>{eway.amount}</td>
                       <td>{eway.consignor_place}</td>
                       <td>{eway.consignee_place}</td>

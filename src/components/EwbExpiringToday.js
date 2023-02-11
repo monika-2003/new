@@ -11,12 +11,11 @@ import {BiLeftArrow} from 'react-icons/bi'
 import Buttons from "./Buttons.js";
 import Card from './Card'
 import Background from "./Background.js";
-const EwbExpiringToday = () => {
+const EwbExpiringToday = ({sessionObject}) => {
 const [result,setResult]=useState([])
 const [stopResult,setStopResult]=useState([])
 let date=new Date()
-let dateMDY = `${date.getFullYear()}-${(date.getMonth() + 1)<10?('0'+(date.getMonth() + 1)):date.getMonth() + 1}-${date.getDate()<10?('0'+(date.getDay())):date.geDay()}`+" 23:59:00";
-    
+let dateMDY = `${date.getFullYear()}-${(date.getMonth() + 1)<10?('0'+(date.getMonth() + 1)):date.getMonth() + 1}-${date.getDate()<10?('0'+(date.getDate())):date.getDate()}`+" 23:59:00"; 
 const [checkState, setCheckState] = useState([]);
 var data=[]
 useEffect(()=>{
@@ -36,7 +35,7 @@ useEffect(()=>{
         "sort_fields": [
           {}
         ],
-        "filter_fields": {"valid_upto":dateMDY}
+        "filter_fields": {valid_upto:dateMDY,manually_stopped:0}
       })
     })
 
@@ -258,8 +257,8 @@ useEffect(()=>{
     }
       return (
         <div className='ewb-expiring-today'>
-            <Titlebar />
-            <Navbar />
+            <Titlebar sessionObject={sessionObject}/>
+            {/*<Navbar />*/}
     
             <div className='inner'>
     
@@ -342,7 +341,7 @@ useEffect(()=>{
                         />
                       </td>
                       <td>{eway.ewaybill_no}</td>
-                      <td>{eway.ewb_date.slice(0,10)}</td>
+                      <td>{eway.ewb_date.slice(0,10).split('-').reverse().join("/")}</td>
                       <td>{eway.amount}</td>
                       <td>{eway.consignor_place}</td>
                       <td>{eway.consignee_place}</td>
