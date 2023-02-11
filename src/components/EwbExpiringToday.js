@@ -11,7 +11,7 @@ import {BiLeftArrow} from 'react-icons/bi'
 import Buttons from "./Buttons.js";
 import Card from './Card'
 import Background from "./Background.js";
-const EwbExpiringToday = () => {
+const EwbExpiringToday = ({sessionObject}) => {
 const [result,setResult]=useState([])
 const [stopResult,setStopResult]=useState([])
 let date=new Date()
@@ -257,7 +257,7 @@ useEffect(()=>{
     }
       return (
         <div className='ewb-expiring-today'>
-            <Titlebar />
+            <Titlebar sessionObject={sessionObject}/>
             {/*<Navbar />*/}
     
             <div className='inner'>

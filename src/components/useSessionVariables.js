@@ -3,7 +3,7 @@ import { useState } from "react";
 export default function useSessionVariables() {
 
   const getAllSessionVariables = () => {
-      const allVariableList = ["access_token", "user_id", "role_id", "branch_id", "branch_name", "branch_info","modules", "branch_account_name", "branch_account_id", "branch_suffix", "user_name", "financial_year", "financial_year_for_fetch"];
+      const allVariableList = ["access_token", "username"];
       let dummyObject = {};
       let outputString = "";
       for (let i=0; i<allVariableList.length; i++){
@@ -16,6 +16,7 @@ export default function useSessionVariables() {
         outputString = JSON.parse(outputString);
         dummyObject[allVariableList[i]] = outputString[allVariableList[i]];
       }
+      console.log("dummyObject:",dummyObject)
       return dummyObject;
   }
 

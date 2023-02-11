@@ -12,7 +12,7 @@ import Buttons from "./Buttons.js";
 import moment from 'moment'
 import Card from './Card'
 import Background from "./Background.js";
-const EwbManuallyStopped = () => {
+const EwbManuallyStopped = ({sessionObject}) => {
 const [result,setResult]=useState([])
 const [startResult,setStartResult]=useState([])
 const [checkState, setCheckState] = useState([]);
@@ -255,7 +255,7 @@ useEffect(()=>{
     }
       return (
         <div className='ewb-expiring-today'>
-            <Titlebar />
+            <Titlebar sessionObject={sessionObject}/>
             {/*<Navbar />*/}
     
             <div className='inner'>
