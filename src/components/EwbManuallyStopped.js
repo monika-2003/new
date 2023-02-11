@@ -235,8 +235,9 @@ useEffect(()=>{
     const handleChange = (e) => {
       setNameField({...nameField, [e.target.name]: e.target.value});
     }
+
     const start = (e) => {
-  
+      console.log("here",startResult)
       const fetchData = async () => {
         const rs = await fetch(SERVER_URL+"/eway/eway_bill_start/", {
           method:"PUT",
@@ -262,7 +263,7 @@ useEffect(()=>{
               <Card />
               
               <div className='align-btns'>
-                <Buttons name = "Start"  onClick={start} />
+              <button className='btn' onClick={start}>Start</button>
               </div>
             <Background/>
               <div className='wrapper'>
