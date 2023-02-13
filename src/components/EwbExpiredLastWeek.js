@@ -58,6 +58,7 @@ useEffect(()=>{
           ewb_date:eway.ewb_date,
           valid_upto:eway.valid_upto,
           last_extended:eway.last_extended,
+          extended_times:eway.extended_times,
           amount:eway.amount,
           consignor_place:eway.consignor_place,
           consignee_place:eway.consignee_place,
@@ -109,6 +110,14 @@ useEffect(()=>{
             {
               Header: "Last Extended",
               accessor: "last_extended",
+              width: "100px",
+              minWidth: "10px",
+              canFilter: true,
+            },
+
+            {
+              Header: "Extended Times",
+              accessor: "extended_times",
               width: "100px",
               minWidth: "10px",
               canFilter: true,
@@ -188,6 +197,7 @@ useEffect(()=>{
       "ewb_date":"",
       "valid_upto":"",
       "last_extended":"",
+      "extended_times":"",
       "amount":"",
       "consignor_place":"",
       "consignee_place":"",
@@ -198,7 +208,7 @@ useEffect(()=>{
       "expired_last_week":true
     })
     
-    const fieldsOfFilters = ["ewaybill_no","ewb_date","valid_upto","last_extended","amount","consignor_place","consignee_place","consignor_name","consignee_name","cewb_no","truck_number","status"]
+    const fieldsOfFilters = ["ewaybill_no","ewb_date","valid_upto","last_extended","extended_times","amount","consignor_place","consignee_place","consignor_name","consignee_name","cewb_no","truck_number"]
     useEffect(()=>{
       const fetchData = async () => {
         const response = await fetch(SERVER_URL+"/eway/db/", {
@@ -239,6 +249,7 @@ useEffect(()=>{
               ewb_date:eway.ewb_date,
               valid_upto:eway.valid_upto,
               last_extended:eway.last_extended,
+              extended_times:eway.extended_times,
               amount:eway.amount,
               consignor_place:eway.consignor_place,
               consignee_place:eway.consignee_place,
@@ -288,7 +299,7 @@ useEffect(()=>{
         <table className='table'>
             <thead>
                 <tr className='table-heading'>
-                    <th colspan = "5" className='first-heading'>Ewb Details</th>
+                    <th colspan = "6" className='first-heading'>Ewb Details</th>
                     <th colspan = "8" className='second-heading'>Consignment Details</th>
                 </tr>
                 
@@ -325,6 +336,8 @@ useEffect(()=>{
               fieldsOfFilters.map((Name)=> 
               <td className='search-col'> <input name={Name} onChange={handleChange} placeholder = "Search" className='search-input'/></td>
             )}
+            <td className='search-col'> <input name="status" onChange="" placeholder = "Search" className='search-input'/></td>
+            
             </tr>
             </thead>
             <tbody>
@@ -359,6 +372,7 @@ useEffect(()=>{
                       <td>{eway.ewb_date!=null?eway.ewb_date.slice(0,10).split('-').reverse().join("/"):"-"}</td>
                       <td>{eway.valid_upto!=null?eway.valid_upto.slice(0,10).split('-').reverse().join("/"):"-"}</td>
                       <td>{eway.last_extended!=null?eway.last_extended.slice(0,10).split('-').reverse().join("/"):"-"}</td>
+                      <td>{eway.extended_times}</td>
                       <td>{eway.amount}</td>
                       <td>{eway.consignor_place}</td>
                       <td>{eway.consignee_place}</td>

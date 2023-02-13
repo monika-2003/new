@@ -115,6 +115,14 @@ useEffect(()=>{
             },
 
             {
+              Header: "Extended Times",
+              accessor: "extended_times",
+              width: "100px",
+              minWidth: "10px",
+              canFilter: true,
+            },
+
+            {
               Header: "Amount",
               accessor: "amount",
               width: "100px",
@@ -198,7 +206,7 @@ useEffect(()=>{
       "manually_stopped":1
     })
     
-    const fieldsOfFilters = ["ewaybill_no","ewb_date","valid_upto","last_extended","amount","consignor_place","consignee_place","consignor_name","consignee_name","cewb_no","truck_number","status"]
+    const fieldsOfFilters = ["ewaybill_no","ewb_date","valid_upto","last_extended","extended_times","amount","consignor_place","consignee_place","consignor_name","consignee_name","cewb_no","truck_number"]
     useEffect(()=>{
       const fetchData = async () => {
         const response = await fetch(SERVER_URL+"/eway/db/", {
@@ -292,7 +300,7 @@ useEffect(()=>{
         <table className='table'>
             <thead>
                 <tr className='table-heading'>
-                    <th colspan = "5" className='first-heading'>Ewb Details</th>
+                    <th colspan = "6" className='first-heading'>Ewb Details</th>
                     <th colspan = "8" className='second-heading'>Consignment Details</th>
                 </tr>
                 
@@ -329,6 +337,8 @@ useEffect(()=>{
               fieldsOfFilters.map((Name)=> 
               <td className='search-col'> <input name={Name} onChange={handleChange} placeholder = "Search" className='search-input'/></td>
             )}
+            <td className='search-col'> <input name="status" onChange="" placeholder = "Search" className='search-input'/></td>
+            
             </tr>
             </thead>
             <tbody>

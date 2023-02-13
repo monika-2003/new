@@ -9,13 +9,14 @@ import {BiSkipPrevious} from 'react-icons/bi'
 import {BiRightArrow} from 'react-icons/bi'
 import {BiLeftArrow} from 'react-icons/bi'
 import Buttons from "./Buttons.js";
+import moment from 'moment'
 import Card from './Card'
 import Background from "./Background.js";
 const EwbExpiringToday = ({sessionObject}) => {
 const [result,setResult]=useState([])
-const [stopResult,setStopResult]=useState([])
 let date=new Date()
 let dateMDY = `${date.getFullYear()}-${(date.getMonth() + 1)<10?('0'+(date.getMonth() + 1)):date.getMonth() + 1}-${date.getDate()<10?('0'+(date.getDate())):date.getDate()}`+" 23:59:00"; 
+const [stopResult,setStopResult]=useState([])
 const [checkState, setCheckState] = useState([]);
 var data=[]
 useEffect(()=>{
@@ -35,7 +36,7 @@ useEffect(()=>{
         "sort_fields": [
           {}
         ],
-        "filter_fields": {valid_upto:dateMDY,manually_stopped:0}
+        "filter_fields": {"valid_upto":dateMDY,"manually_stopped":0}
       })
     })
 
@@ -46,7 +47,7 @@ useEffect(()=>{
     }
     data = new Map(Object.entries(data.data))
     setResult(data)
-    console.log("Here:",data,dateMDY,(new Date()).toLocaleDateString(),(new Date().getFullYear().toString() + '-' + new Date().getMonth() + 1<10?'0'+(new Date().getMonth() + 1).toString():(new Date().getMonth() + 1).toString() + '-' + (new Date().getDate()).toString())+" 23:59:00")
+    console.log("Here:",data,ACCESS_TOKEN,new Date().toLocaleDateString()+" 23:59:00")
     setCheckState(
       //console.log("eway:",[...data.values()])
       [...data.values()].map(eway => {   
@@ -59,6 +60,7 @@ useEffect(()=>{
           ewb_date:eway.ewb_date,
           valid_upto:eway.valid_upto,
           last_extended:eway.last_extended,
+          extended_times:eway.extended_times,
           amount:eway.amount,
           consignor_place:eway.consignor_place,
           consignee_place:eway.consignee_place,
@@ -98,7 +100,7 @@ useEffect(()=>{
                 minWidth: "10px",
                 canFilter: true,
             },
-            
+    
             {
               Header: "Valid Upto",
               accessor: "valid_upto",
@@ -110,6 +112,14 @@ useEffect(()=>{
             {
               Header: "Last Extended",
               accessor: "last_extended",
+              width: "100px",
+              minWidth: "10px",
+              canFilter: true,
+            },
+
+            {
+              Header: "Extended Times",
+              accessor: "extended_times",
               width: "100px",
               minWidth: "10px",
               canFilter: true,
@@ -189,6 +199,7 @@ useEffect(()=>{
       "ewb_date":"",
       "valid_upto":dateMDY,
       "last_extended":"",
+      "extended_times":"",
       "amount":"",
       "consignor_place":"",
       "consignee_place":"",
@@ -199,7 +210,7 @@ useEffect(()=>{
       "manually_stopped":0
     })
     
-    const fieldsOfFilters = ["ewaybill_no","ewb_date","valid_upto","last_extended","amount","consignor_place","consignee_place","consignor_name","consignee_name","cewb_no","truck_number","status"]
+    const fieldsOfFilters = ["ewaybill_no","ewb_date","valid_upto","last_extended","extended_times","amount","consignor_place","consignee_place","consignor_name","consignee_name","cewb_no","truck_number"]
     useEffect(()=>{
       const fetchData = async () => {
         const response = await fetch(SERVER_URL+"/eway/db/", {
@@ -220,11 +231,11 @@ useEffect(()=>{
             "filter_fields": nameField
           })
         })
+        data=await response.json()
         console.log("datadata", data)
         if (!("data" in data)){
           return;
         }
-        data=await response.json()
         data = new Map(Object.entries(data.data))
         setResult(data)
         console.log("janvi_data",data,ACCESS_TOKEN)
@@ -240,6 +251,7 @@ useEffect(()=>{
               ewb_date:eway.ewb_date,
               valid_upto:eway.valid_upto,
               last_extended:eway.last_extended,
+              extended_times:eway.extended_times,
               amount:eway.amount,
               consignor_place:eway.consignor_place,
               consignee_place:eway.consignee_place,
@@ -258,9 +270,8 @@ useEffect(()=>{
     const handleChange = (e) => {
       setNameField({...nameField, [e.target.name]: e.target.value});
     }
-    const stop = (e) => {
-      console.log("array",stopResult )
-      // console.log("here:",[JSON.parse(stopResult)])
+    const stop = () => {
+  
       const fetchData = async () => {
         const rs = await fetch(SERVER_URL+"/eway/eway_bill_stop/", {
           method:"PUT",
@@ -284,17 +295,13 @@ useEffect(()=>{
             <div className='inner'>
     
               <Card />
-
-              <div className='align-btns'>
-                <button className='btn' onClick={stop}>Stop</button>
-              </div>
               
             <Background/>
               <div className='wrapper'>
         <table className='table'>
             <thead>
                 <tr className='table-heading'>
-                    <th colspan = "5" className='first-heading'>Ewb Details</th>
+                    <th colspan = "6" className='first-heading'>Ewb Details</th>
                     <th colspan = "8" className='second-heading'>Consignment Details</th>
                 </tr>
                 
@@ -331,6 +338,7 @@ useEffect(()=>{
               fieldsOfFilters.map((Name)=> 
               <td className='search-col'> <input name={Name} onChange={handleChange} placeholder = "Search" className='search-input'/></td>
             )}
+            <td className='search-col'> <input name="status" onChange="" placeholder = "Search" className='search-input'/></td>
             </tr>
             </thead>
             <tbody>
@@ -362,9 +370,10 @@ useEffect(()=>{
                         />
                       </td>
                       <td>{eway.ewaybill_no}</td>
-                      <td>{eway.ewb_date.slice(0,10).split('-').reverse().join("/")}</td>
+                      <td>{eway.ewb_date!=null?eway.ewb_date.slice(0,10).split('-').reverse().join("/"):"-"}</td>
                       <td>{eway.valid_upto!=null?eway.valid_upto.slice(0,10).split('-').reverse().join("/"):"-"}</td>
                       <td>{eway.last_extended!=null?eway.last_extended.slice(0,10).split('-').reverse().join("/"):"-"}</td>
+                      <td>{eway.extended_times}</td>
                       <td>{eway.amount}</td>
                       <td>{eway.consignor_place}</td>
                       <td>{eway.consignee_place}</td>
@@ -372,7 +381,7 @@ useEffect(()=>{
                       <td>{eway.consignee_name}</td>
                       <td>{eway.cewb_no}</td>
                       <td>{eway.truck_number}</td>
-                      <td>{"Expiring"}</td>
+                      <td>{"Expired"}</td>
                     </tr>)
                   })}
 
