@@ -43,6 +43,10 @@ useEffect(()=>{
     })
 
     data = await response.json();
+    console.log("datadata", data)
+    if (!("data" in data)){
+      return;
+    }
     data = new Map(Object.entries(data.data))
     setResult(data)
     console.log("Here:",data,ACCESS_TOKEN,dateMDY)
@@ -219,6 +223,10 @@ useEffect(()=>{
           })
         })
         data=await response.json()
+        console.log("datadata", data)
+        if (!("data" in data)){
+          return;
+        }
         data = new Map(Object.entries(data.data))
         setResult(data)
         console.log("janvi_data",data,ACCESS_TOKEN)
@@ -252,8 +260,10 @@ useEffect(()=>{
     const handleChange = (e) => {
       setNameField({...nameField, [e.target.name]: e.target.value});
     }
-    const stop = () => {
-  
+
+    const stop = (e) => {
+      console.log("array",stopResult )
+      // console.log("here:",[JSON.parse(stopResult)])
       const fetchData = async () => {
         const rs = await fetch(SERVER_URL+"/eway/eway_bill_stop/", {
           method:"PUT",
@@ -279,7 +289,7 @@ useEffect(()=>{
               <Card />
 
               <div className='align-btns'>
-                <Buttons name = "Stop"  onClick={stop} />
+                <button className='btn' onClick={stop}>Stop</button>
               </div>
               
             <Background/>

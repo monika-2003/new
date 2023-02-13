@@ -40,6 +40,10 @@ useEffect(()=>{
     })
 
     data = await response.json();
+    console.log("datadata", data)
+    if (!("data" in data)){
+      return;
+    }
     data = new Map(Object.entries(data.data))
     setResult(data)
     console.log("Here:",data,dateMDY,(new Date()).toLocaleDateString(),(new Date().getFullYear().toString() + '-' + new Date().getMonth() + 1<10?'0'+(new Date().getMonth() + 1).toString():(new Date().getMonth() + 1).toString() + '-' + (new Date().getDate()).toString())+" 23:59:00")
@@ -216,6 +220,10 @@ useEffect(()=>{
             "filter_fields": nameField
           })
         })
+        console.log("datadata", data)
+        if (!("data" in data)){
+          return;
+        }
         data=await response.json()
         data = new Map(Object.entries(data.data))
         setResult(data)
