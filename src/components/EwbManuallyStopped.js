@@ -52,6 +52,8 @@ useEffect(()=>{
           select: false,
           ewaybill_no: eway.ewaybill_no,
           ewb_date:eway.ewb_date,
+          valid_upto:eway.valid_upto,
+          last_extended:eway.last_extended,
           amount:eway.amount,
           consignor_place:eway.consignor_place,
           consignee_place:eway.consignee_place,
@@ -91,7 +93,23 @@ useEffect(()=>{
                 minWidth: "10px",
                 canFilter: true,
             },
-    
+            
+            {
+              Header: "Valid Upto",
+              accessor: "valid_upto",
+              width: "100px",
+              minWidth: "10px",
+              canFilter: true,
+            },
+
+            {
+              Header: "Last Extended",
+              accessor: "last_extended",
+              width: "100px",
+              minWidth: "10px",
+              canFilter: true,
+            },
+
             {
               Header: "Amount",
               accessor: "amount",
@@ -164,6 +182,8 @@ useEffect(()=>{
     const [nameField,setNameField] = useState({
       "ewaybill_no":"",
       "ewb_date":"",
+      "valid_upto":"",
+      "last_extended":"",
       "amount":"",
       "consignor_place":"",
       "consignee_place":"",
@@ -174,7 +194,7 @@ useEffect(()=>{
       "manually_stopped":1
     })
     
-    const fieldsOfFilters = ["ewaybill_no","ewb_date","amount","consignor_place","consignee_place","consignor_name","consignee_name","cewb_no","truck_number"]
+    const fieldsOfFilters = ["ewaybill_no","ewb_date","valid_upto","last_extended","amount","consignor_place","consignee_place","consignor_name","consignee_name","cewb_no","truck_number","status"]
     useEffect(()=>{
       const fetchData = async () => {
         const response = await fetch(SERVER_URL+"/eway/db/", {
@@ -209,6 +229,8 @@ useEffect(()=>{
               select: false,
               ewaybill_no: eway.ewaybill_no,
               ewb_date:eway.ewb_date,
+              valid_upto:eway.valid_upto,
+              last_extended:eway.last_extended,
               amount:eway.amount,
               consignor_place:eway.consignor_place,
               consignee_place:eway.consignee_place,
@@ -262,8 +284,8 @@ useEffect(()=>{
         <table className='table'>
             <thead>
                 <tr className='table-heading'>
-                    <th colspan = "4" className='first-heading'>Ewb Details</th>
-                    <th colspan = "7" className='second-heading'>Consignment Details</th>
+                    <th colspan = "5" className='first-heading'>Ewb Details</th>
+                    <th colspan = "8" className='second-heading'>Consignment Details</th>
                 </tr>
                 
             <tr className='heading-row'>
@@ -330,7 +352,9 @@ useEffect(()=>{
                         />
                       </td>
                       <td>{eway.ewaybill_no}</td>
-                      <td>{eway.ewb_date.slice(0,10).split('-').reverse().join("/")}</td>
+                      <td>{eway.ewb_date!=null?eway.ewb_date.slice(0,10).split('-').reverse().join("/"):"-"}</td>
+                      <td>{eway.valid_upto!=null?eway.valid_upto.slice(0,10).split('-').reverse().join("/"):"-"}</td>
+                      <td>{eway.last_extended!=null?eway.last_extended.slice(0,10).split('-').reverse().join("/"):"-"}</td>
                       <td>{eway.amount}</td>
                       <td>{eway.consignor_place}</td>
                       <td>{eway.consignee_place}</td>
@@ -348,7 +372,7 @@ useEffect(()=>{
             <div className='last-row'>
                 <button><BiSkipPrevious className='table-icon1' /></button>
                 <button><BiRightArrow className='table-icon2' /></button>
-                <div>{result.length}</div>
+                <div>{checkState.length}</div>
                 <button><BiLeftArrow className='table-icon3' /></button>
                 <button><MdSkipNext className='table-icon4' /></button>
             </div>
