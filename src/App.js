@@ -5,6 +5,7 @@ import EwbExtendedToday from './components/EwbExtendedToday'
 import EwbManuallyStopped from './components/EwbManuallyStopped'
 import Login from './components/Login';
 import useSessionVariables from "./components/useSessionVariables.js";
+import EwbExtensionReportPage from './components/EwbExtensionReportPage';
 import {
   BrowserRouter,
   Routes,
@@ -25,6 +26,7 @@ function App() {
         <Route path='/ewb-extended-today' element = {<EwbExtendedToday sessionObject={sessionObject}/>} />
         <Route path='/ewb-manually-stopped' element = {<EwbManuallyStopped sessionObject={sessionObject}/>} />
         <Route path='/ewb-expired-last-week' element = {<EwbExpiredLastWeek sessionObject={sessionObject}/>} />
+        <Route path='/new' element = {<EwbExtensionReportPage sessionObject={sessionObject}/>} />
       </Routes>)}
     </BrowserRouter>
   );

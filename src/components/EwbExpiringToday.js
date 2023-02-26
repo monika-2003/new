@@ -9,15 +9,31 @@ import {BiSkipPrevious} from 'react-icons/bi'
 import {BiRightArrow} from 'react-icons/bi'
 import {BiLeftArrow} from 'react-icons/bi'
 import Buttons from "./Buttons.js";
+import ReportTable from "./ReportTable";
 import Card from './Card'
 import Background from "./Background.js";
 const EwbExpiringToday = ({sessionObject}) => {
+  const [checkedList, setCheckedList] = React.useState([]);
 const [result,setResult]=useState([])
 const [stopResult,setStopResult]=useState([])
+const [loading, setLoading] = React.useState(false);
+const [pageCount, setPageCount] = React.useState(0);
 let date=new Date()
 let dateMDY = `${date.getFullYear()}-${(date.getMonth() + 1)<10?('0'+(date.getMonth() + 1)):date.getMonth() + 1}-${date.getDate()<10?('0'+(date.getDate())):date.getDate()}`+" 23:59:00"; 
+const fetchIdRef = React.useRef(0);
 const [checkState, setCheckState] = useState([]);
-var data=[]
+const [data, setData] = React.useState([]);
+const handleSelectAll = () => {
+  let tempChecked = [];
+  data.forEach((row) => {
+      tempChecked.push(row.eway_bill_no);
+  })
+  setCheckedList(tempChecked);
+}
+const isChecked = (row) => {
+  const val = row[0].value;
+  return (checkedList.indexOf(val) > -1);
+}
 useEffect(()=>{
   const fetchData = async () => {
     var response = await fetch(SERVER_URL+"/eway/db/", {
@@ -70,6 +86,85 @@ useEffect(()=>{
   }
   fetchData();
 },[]);
+
+const handleCheckboxChange = (row) => {
+  const val = row[0].value;
+  const ind = checkedList.indexOf(val);
+  let tempChecked = [...checkedList];
+  if(ind > -1) {
+      tempChecked.splice(ind, 1);
+  }
+  else {
+      tempChecked.push(val);
+  }
+  setCheckedList(tempChecked);
+}
+
+const handleDeselectAll = () => {
+  setCheckedList([]);
+}
+
+const getSelectAllValue = () => {
+  const isAllSelected = checkedList.length == data.length;
+  return isAllSelected;
+}
+
+const fetchData = React.useCallback(
+  async ({ pageSize, pageIndex, sortBy, customFilters }) => {
+    // This will get called when the table needs new data
+    // You could fetch your data from literally anywhere,
+    // even a server. But for this example, we'll just fake it.
+
+    // Give this fetch an ID
+    const fetchId = ++fetchIdRef.current;
+    console.log("12323", sortBy, customFilters, fetchId);
+    // Set the loading state
+    setLoading(true);
+
+    if (fetchId === fetchIdRef.current) {
+      // customFilters.created_from = String(
+      //   sessionObject.sessionVariables.branch_id
+      // );
+
+      if("in_transit" in customFilters) {
+      let response = await fetch(SERVER_URL + "/report/eway_bill_extension", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          paginate: { number_of_rows: pageSize, page_number: pageIndex + 1 },
+          sort_fields: sortBy,
+          filter_fields: customFilters,
+        }),
+      });
+      let resp = await response.json();
+      if (resp["data"] && "total_rows" in resp) {
+        setData(resp["data"]);
+        setPageCount(Math.ceil(resp["total_rows"] / pageSize));
+      }
+      setLoading(false);
+    }
+  }
+    // We'll even set a delay to simulate a server here
+    //   setTimeout(() => {
+    //     // Only update the data if this is the latest fetch
+    //     if (fetchId === fetchIdRef.current) {
+    //       const startRow = pageSize * pageIndex;
+    //       const endRow = startRow + pageSize;
+    //     //   setData(serverData.slice(startRow, endRow));
+    //       console.log("data", data);
+    //       // Your server could send back total page count.
+    //       // For now we'll just fake it, too
+    //       setPageCount(Math.ceil(serverData.length / pageSize));
+
+    //       setLoading(false);
+    //     }
+    //   }, 1000);
+  },
+  []
+);
 
    /*{
         Header: "Extended Times",
@@ -270,100 +365,22 @@ useEffect(()=>{
               
             <Background/>
               <div className='wrapper'>
-        <table className='table'>
-            <thead>
-                <tr className='table-heading'>
-                    <th colspan = "4" className='first-heading'>Ewb Details</th>
-                    <th colspan = "7" className='second-heading'>Consignment Details</th>
-                </tr>
-                
-            <tr className='heading-row'>
-                <th>
-                </th>
-
-                {columns.map((Name)=> <th className='heading-col'>{Name.Header}</th>)}
-            </tr>
-
-            <tr className='search-row'>
-                <td>
-                <input 
-                    type='checkbox'
-                    value="all"
-                    onChange={event => {
-                      let checked = event.target.checked;
-                      setCheckState(
-                        checkState.map(data => {
-                          data.select = checked;
-                          if(data.select == true && !stopResult.includes(data.ewaybill_no))
-                            setStopResult(stopResult=>[...stopResult,data.ewaybill_no])
-                          else if(data.select==false && stopResult.includes(data.ewaybill_no))
-                            setStopResult(stopResult=>[...stopResult.slice(data.ewaybill_no)])
-                          console.log("stopResult:",stopResult,data.select)
-                          return data;
-                        })
-                      );
-                      console.log("jer:",checkState);
-                    }}
-                />
-                </td>
-            {
-              fieldsOfFilters.map((Name)=> 
-              <td className='search-col'> <input name={Name} onChange={handleChange} placeholder = "Search" className='search-input'/></td>
-            )}
-            </tr>
-            </thead>
-            <tbody>
-            {/*moment({hours:0}).diff(moment(eway.valid_upto,"D-MM-YYYY"),"days")>=7 && moment({hours:0}).diff(moment(eway.valid_upto,"D-MM-YYYY"),"days")<=14?*/}
-                  {checkState.map(eway => {
-                  return (
-                  <tr className='heading-row' key={eway.ewaybill_no}>
-                      <td>
-                        <input type='checkbox' value={eway.ewaybill_no} 
-                        onChange={event => {
-                          let checked = event.target.checked;
-                          console.log("jer:",checkState);
-                          setCheckState(
-                            checkState.map(data => {
-                              if (eway.ewaybill_no === data.ewaybill_no) {
-                                data.select = checked;
-                                if(data.select == true && !stopResult.includes(data.ewaybill_no))
-                                  setStopResult(stopResult=>[...stopResult,data.ewaybill_no])
-                                else if(data.select==false && stopResult.includes(data.ewaybill_no))
-                                  setStopResult(stopResult=>{return stopResult.filter(d=>d.ewaybill_no!==data.ewaybill_no)})
-                                console.log("stopResult",stopResult)
-                              }
-                              return data;
-                            })
-                          );
-                          console.log("jer:",checkState);
-                        }}
-                        checked={eway.select}
-                        />
-                      </td>
-                      <td>{eway.ewaybill_no}</td>
-                      <td>{eway.ewb_date.slice(0,10).split('-').reverse().join("/")}</td>
-                      <td>{eway.amount}</td>
-                      <td>{eway.consignor_place}</td>
-                      <td>{eway.consignee_place}</td>
-                      <td>{eway.consignor_name}</td>
-                      <td>{eway.consignee_name}</td>
-                      <td>{eway.cewb_no}</td>
-                      <td>{eway.truck_number}</td>
-                      <td>{"Expiring"}</td>
-                    </tr>)
-                  })}
-
-            </tbody>
-            </table>
-
-            <div className='last-row'>
-                <button><BiSkipPrevious className='table-icon1' /></button>
-                <button><BiRightArrow className='table-icon2' /></button>
-                <div>{result.length}</div>
-                <button><BiLeftArrow className='table-icon3' /></button>
-                <button><MdSkipNext className='table-icon4' /></button>
-            </div>
-            </div>
+              <ReportTable
+                checkbox={true}
+                handleCheckboxChange={handleCheckboxChange}
+                checkedList={checkedList}
+                columns={columns}
+                data={data}
+                fetchData={fetchData}
+                loading={loading}
+                pageCount={pageCount}
+                isChecked={isChecked}
+                getSelectAllValue={getSelectAllValue}
+                handleSelectAll={handleSelectAll}
+                handleDeselectAll={handleDeselectAll}
+                title = "EwbExtensionReport"
+              />
+              </div>
             </div>
             </div>
             

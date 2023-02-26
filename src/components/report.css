@@ -1,0 +1,90 @@
+.report-container {
+    /* display: flex;
+    flex-direction: column; */
+    /* margin: 10px 10px 10px 10px; */
+    background-color: inherit;
+    /* filter: var(--filter); */
+    /* border-radius: var(--border-radius);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 1); */
+    padding: 30px;
+    width: 90%;
+    border: black ridge 4px;
+    /* q */
+}
+
+.report-table {
+    border-top: black double 3px;
+    border-bottom: black solid 1px;
+    background-color: rgba(236, 238, 236, 0.884);
+    /* overflow-x: scroll; */
+}
+
+#wrapper1, #wrapper2 {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+#wrapper1 {
+    height: 20px;
+}
+
+.div1 {
+    /* width: 100px; */
+    height: 20px;
+}
+
+.div2 {
+    /* width: 1000px; */
+    /* height: 100px; */
+    /* background-color: #88FF88; */
+    /* overflow-y: auto; */
+    /* border-top: black double 3px;
+    border-bottom: black solid 1px; */
+    border-top: black double 3px;
+    border-bottom: black solid 1px;
+    background-color: rgba(236, 238, 236, 0.884);
+}
+
+.pagination {
+    margin-bottom: 20px;
+}
+
+
+/* responsivess */
+
+@media only screen and (max-width: 636px) {
+    .report-container {
+        width: 450px;
+    }
+}
+
+@media only screen and (max-width: 565px) {
+    .report-container {
+        width: 380px;
+    }
+}
+
+@media only screen and (max-width: 499px) {
+    .report-container {
+        width: 350px;
+    }
+}
+
+@media only screen and (max-width: 470px) {
+    .report-container {
+        width: 300px;
+    }
+}
+
+@media only screen and (max-width: 422px) {
+    .report-container {
+        width: 270px;
+    }
+}
+
+@media only screen and (max-width: 390px) {
+    .report-container {
+        width: 230px;
+    }
+}
