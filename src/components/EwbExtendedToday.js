@@ -62,6 +62,7 @@ useEffect(()=>{
           ewb_date:eway.ewb_date,
           valid_upto:eway.valid_upto,
           last_extended:eway.last_extended,
+          extended_times:eway.extended_times,
           amount:eway.amount,
           consignor_place:eway.consignor_place,
           consignee_place:eway.consignee_place,
@@ -380,6 +381,7 @@ useEffect(()=>{
                       <td>{eway.ewb_date!=null?eway.ewb_date.slice(0,10).split('-').reverse().join("/"):"-"}</td>
                       <td>{eway.valid_upto!=null?eway.valid_upto.slice(0,10).split('-').reverse().join("/"):"-"}</td>
                       <td>{eway.last_extended!=null?eway.last_extended.slice(0,10).split('-').reverse().join("/"):"-"}</td>
+                      <td>{eway.extended_times}</td>
                       <td>{eway.extended_times}</td>
                       <td>{eway.amount}</td>
                       <td>{eway.consignor_place}</td>

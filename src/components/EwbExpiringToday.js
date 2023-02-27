@@ -381,7 +381,7 @@ useEffect(()=>{
                       <td>{eway.consignee_name}</td>
                       <td>{eway.cewb_no}</td>
                       <td>{eway.truck_number}</td>
-                      <td>{"Expired"}</td>
+                      <td>{"Expiring"}</td>
                     </tr>)
                   })}
 
