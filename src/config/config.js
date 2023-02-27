@@ -15,6 +15,7 @@ var SERVER_URL = ""
 const token=localStorage.getItem('login')
 if(token)
   var ACCESS_TOKEN = "Bearer "+token
+  console.log("gererereerererere", ACCESS_TOKEN)
 if (getLocalFlag()){
     console.log("in if")
     SERVER_URL="http://43.252.197.60:8001"

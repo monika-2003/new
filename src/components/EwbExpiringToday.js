@@ -13,76 +13,70 @@ import moment from 'moment'
 import Card from './Card'
 import Background from "./Background.js";
 const EwbExpiringToday = ({sessionObject}) => {
-const [result,setResult]=useState([])
 let date=new Date()
 let dateMDY = `${date.getFullYear()}-${(date.getMonth() + 1)<10?('0'+(date.getMonth() + 1)):date.getMonth() + 1}-${date.getDate()<10?('0'+(date.getDate())):date.getDate()}`+" 23:59:00"; 
 const [stopResult,setStopResult]=useState([])
 const [checkState, setCheckState] = useState([]);
 var data=[]
-useEffect(()=>{
-  const fetchData = async () => {
-    var response = await fetch(SERVER_URL+"/eway/db/", {
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        "Accept":"application/json",
-        "Authorization":ACCESS_TOKEN
-      },
-      body:JSON.stringify({
-        "paginate": {
-          "number_of_rows": 100,
-          "page_number": 1
-        },
-        "sort_fields": [
-          {}
-        ],
-        "filter_fields": {"valid_upto":dateMDY,"manually_stopped":0}
-      })
-    })
 
-    data = await response.json();
-    console.log("datadata", data)
-    if (!("data" in data)){
-      return;
-    }
-    data = new Map(Object.entries(data.data))
-    setResult(data)
-    console.log("Here:",data,ACCESS_TOKEN,new Date().toLocaleDateString()+" 23:59:00")
-    setCheckState(
-      //console.log("eway:",[...data.values()])
-      [...data.values()].map(eway => {   
-        console.log("eway",eway)
-      //data.data
-      //checkState.map(eway=>{
-        return {
-          select: false,
-          ewaybill_no: eway.ewaybill_no,
-          ewb_date:eway.ewb_date,
-          valid_upto:eway.valid_upto,
-          last_extended:eway.last_extended,
-          extended_times:eway.extended_times,
-          amount:eway.amount,
-          consignor_place:eway.consignor_place,
-          consignee_place:eway.consignee_place,
-          consignor_name:eway.consignor_name,
-          consignee_name:eway.consignee_name,
-          cewb_no:eway.cewb_no,
-          truck_number:eway.truck_number
-        };
+var ACCESS_TOKEN = null
+
+const fetchData = async () => {
+  ACCESS_TOKEN = "Bearer "+localStorage.getItem('login');
+  const response = await fetch(SERVER_URL+"/eway/db/", {
+    method:"POST",          
+    headers:{
+      "Content-Type":"application/json",
+      "Accept":"application/json",
+      "Authorization":ACCESS_TOKEN
+    },
+    body:JSON.stringify({
+      "paginate": {
+        "number_of_rows": 100,
+        "page_number": 1
+      },
+      "sort_fields": [
+        {}
+      ],
+      "filter_fields": nameField
     })
-    );
+  })
+  data=await response.json()
+  console.log("datadata", data)
+  if (!("data" in data)){
+    return;
   }
+  data = new Map(Object.entries(data.data))
+  console.log("janvi_data",data,ACCESS_TOKEN)
+  setCheckState(
+    //console.log("eway:",[...data.values()])
+    [...data.values()].map(eway => {   
+      console.log("eway",eway)
+    //data.data
+    //checkState.map(eway=>{
+      return {
+        select: false,
+        ewaybill_no: eway.ewaybill_no,
+        ewb_date:eway.ewb_date,
+        valid_upto:eway.valid_upto,
+        last_extended:eway.last_extended,
+        extended_times:eway.extended_times,
+        amount:eway.amount,
+        consignor_place:eway.consignor_place,
+        consignee_place:eway.consignee_place,
+        consignor_name:eway.consignor_name,
+        consignee_name:eway.consignee_name,
+        cewb_no:eway.cewb_no,
+        truck_number:eway.truck_number
+      };
+  })
+  );
+}
+
+useEffect(()=>{
   fetchData();
 },[]);
 
-   /*{
-        Header: "Extended Times",
-        accessor: "extended_times",
-        width: "50px",
-        minWidth: "10px",
-        canFilter: true,
-      },*/
-      //const is_expired={accessor: valid_to}
       const columns = React.useMemo(
         () => [
             {
@@ -212,57 +206,7 @@ useEffect(()=>{
     
     const fieldsOfFilters = ["ewaybill_no","ewb_date","valid_upto","last_extended","extended_times","amount","consignor_place","consignee_place","consignor_name","consignee_name","cewb_no","truck_number"]
     useEffect(()=>{
-      const fetchData = async () => {
-        const response = await fetch(SERVER_URL+"/eway/db/", {
-          method:"POST",          
-          headers:{
-            "Content-Type":"application/json",
-            "Accept":"application/json",
-            "Authorization":ACCESS_TOKEN
-          },
-          body:JSON.stringify({
-            "paginate": {
-              "number_of_rows": 100,
-              "page_number": 1
-            },
-            "sort_fields": [
-              {}
-            ],
-            "filter_fields": nameField
-          })
-        })
-        data=await response.json()
-        console.log("datadata", data)
-        if (!("data" in data)){
-          return;
-        }
-        data = new Map(Object.entries(data.data))
-        setResult(data)
-        console.log("janvi_data",data,ACCESS_TOKEN)
-        setCheckState(
-          //console.log("eway:",[...data.values()])
-          [...data.values()].map(eway => {   
-            console.log("eway",eway)
-          //data.data
-          //checkState.map(eway=>{
-            return {
-              select: false,
-              ewaybill_no: eway.ewaybill_no,
-              ewb_date:eway.ewb_date,
-              valid_upto:eway.valid_upto,
-              last_extended:eway.last_extended,
-              extended_times:eway.extended_times,
-              amount:eway.amount,
-              consignor_place:eway.consignor_place,
-              consignee_place:eway.consignee_place,
-              consignor_name:eway.consignor_name,
-              consignee_name:eway.consignee_name,
-              cewb_no:eway.cewb_no,
-              truck_number:eway.truck_number
-            };
-        })
-        );
-      }
+
       fetchData()
       
     },[nameField]);
