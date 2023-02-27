@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { SERVER_URL, ACCESS_TOKEN } from "../config/config.js";
+import { SERVER_URL, ACCESS_TOKEN, USE_OVERLAY } from "../config/config.js";
 import Navbar from './Navbar'
 import Titlebar from './Titlebar'
 import './EwbExpiringToday.css'
@@ -11,12 +11,14 @@ import {BiLeftArrow} from 'react-icons/bi'
 import Buttons from "./Buttons.js";
 import moment from 'moment'
 import Card from './Card'
+import LoadingOverlay from "react-loading-overlay";
 import Background from "./Background.js";
 const EwbExpiringToday = ({sessionObject}) => {
 let date=new Date()
 let dateMDY = `${date.getFullYear()}-${(date.getMonth() + 1)<10?('0'+(date.getMonth() + 1)):date.getMonth() + 1}-${date.getDate()<10?('0'+(date.getDate())):date.getDate()}`+" 23:59:00"; 
 const [stopResult,setStopResult]=useState([])
 const [checkState, setCheckState] = useState([]);
+const [overlay, setOverlay] = useState(false);
 var data=[]
 
 var ACCESS_TOKEN = null
@@ -214,31 +216,50 @@ useEffect(()=>{
     const handleChange = (e) => {
       setNameField({...nameField, [e.target.name]: e.target.value});
     }
-    const stop = () => {
-  
-      const fetchData = async () => {
-        const rs = await fetch(SERVER_URL+"/eway/eway_bill_stop/", {
-          method:"PUT",
-          headers: {
-            "Content-Type":"application/json",
-              "Accept":"application/json",
-              "Authorization":ACCESS_TOKEN
-          },
-          body:JSON.stringify(stopResult)
-        })
-          const data = await rs.json();
-          console.log("stop:",data,stopResult)
-        }
-          fetchData()
+    const stop = async (e) => {
+      ACCESS_TOKEN = "Bearer "+localStorage.getItem('login');
+      setOverlay(true)
+      console.log("array",stopResult )
+      const rs = await fetch(SERVER_URL+"/eway/eway_bill_stop/", {
+        method:"PUT",
+        headers: {
+          "Content-Type":"application/json",
+            "Accept":"application/json",
+            "Authorization":ACCESS_TOKEN
+        },
+        body:JSON.stringify(stopResult)
+      })
+      const data = await rs.json();
+      console.log("stop:",data,stopResult)
+      setOverlay(false)
     }
+
       return (
         <div className='ewb-expiring-today'>
+          {USE_OVERLAY && (
+          <LoadingOverlay
+            active={overlay}
+            spinner
+            text="Loading your content..."
+            styles={{
+              wrapper: {
+                // width: '400px',
+                // height: '400px',
+                overflow: true ? "hidden" : "scroll",
+              },
+            }}
+          ></LoadingOverlay>
+          )}
             <Titlebar sessionObject={sessionObject}/>
             {/*<Navbar />*/}
     
             <div className='inner'>
     
               <Card />
+
+              <div className='align-btns'>
+                <button className='btn' onClick={stop}>Stop</button>
+              </div>
               
             <Background/>
               <div className='wrapper'>

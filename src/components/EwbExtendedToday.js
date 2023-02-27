@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { SERVER_URL, ACCESS_TOKEN } from "../config/config.js";
+import { SERVER_URL, ACCESS_TOKEN, USE_OVERLAY } from "../config/config.js";
 import Navbar from './Navbar'
 import Titlebar from './Titlebar'
 import './EwbExpiringToday.css'
@@ -12,12 +12,14 @@ import Buttons from "./Buttons.js";
 import moment from 'moment'
 import Card from './Card'
 import Background from "./Background.js";
+import LoadingOverlay from "react-loading-overlay";
 const EwbExtendedToday = ({sessionObject})  => {
 const [stopResult,setStopResult]=useState([])
 let date=new Date()
 let dateMDY = `${date.getFullYear()}-${(date.getMonth() + 1)<10?('0'+(date.getMonth() + 1)):date.getMonth() + 1}-${date.getDate()<10?('0'+(date.getDate())):date.getDate()}`; 
  
 const [checkState, setCheckState] = useState([]);
+const [overlay, setOverlay] = useState(false);
 var data=[]
 
 var ACCESS_TOKEN = null
@@ -227,26 +229,39 @@ useEffect(()=>{
       setNameField({...nameField, [e.target.name]: e.target.value});
     }
 
-    const stop = (e) => {
+    const stop = async (e) => {
+      ACCESS_TOKEN = "Bearer "+localStorage.getItem('login');
+      setOverlay(true)
       console.log("array",stopResult )
-      // console.log("here:",[JSON.parse(stopResult)])
-      const fetchData = async () => {
-        const rs = await fetch(SERVER_URL+"/eway/eway_bill_stop/", {
-          method:"PUT",
-          headers: {
-            "Content-Type":"application/json",
-              "Accept":"application/json",
-              "Authorization":ACCESS_TOKEN
-          },
-          body:JSON.stringify(stopResult)
-        })
-          const data = await rs.json();
-          console.log("stop:",data,stopResult)
-        }
-          fetchData()
+      const rs = await fetch(SERVER_URL+"/eway/eway_bill_stop/", {
+        method:"PUT",
+        headers: {
+          "Content-Type":"application/json",
+            "Accept":"application/json",
+            "Authorization":ACCESS_TOKEN
+        },
+        body:JSON.stringify(stopResult)
+      })
+      const data = await rs.json();
+      console.log("stop:",data,stopResult)
+      setOverlay(false)
     }
       return (
         <div className='ewb-expiring-today'>
+          {USE_OVERLAY && (
+          <LoadingOverlay
+            active={overlay}
+            spinner
+            text="Loading your content..."
+            styles={{
+              wrapper: {
+                // width: '400px',
+                // height: '400px',
+                overflow: true ? "hidden" : "scroll",
+              },
+            }}
+          ></LoadingOverlay>
+          )}
             <Titlebar sessionObject={sessionObject}/>
             {/*<Navbar />*/}
     
