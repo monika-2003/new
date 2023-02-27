@@ -12,7 +12,8 @@ import Buttons from "./Buttons.js";
 import moment from 'moment'
 import Card from './Card'
 import Background from "./Background.js";
-import LoadingOverlay from "react-loading-overlay";
+
+// import LoadingOverlay from "react-loading-overlay";
 const EwbExtendedToday = ({sessionObject})  => {
 const [stopResult,setStopResult]=useState([])
 let date=new Date()
@@ -248,7 +249,7 @@ useEffect(()=>{
     }
       return (
         <div className='ewb-expiring-today'>
-          {USE_OVERLAY && (
+          {/* {USE_OVERLAY && (
           <LoadingOverlay
             active={overlay}
             spinner
@@ -261,7 +262,7 @@ useEffect(()=>{
               },
             }}
           ></LoadingOverlay>
-          )}
+          )} */}
             <Titlebar sessionObject={sessionObject}/>
             {/*<Navbar />*/}
     

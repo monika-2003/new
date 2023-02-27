@@ -1,7 +1,7 @@
 const SERVER_IP = "localhost";
 const SERVER_PORT = "3000";
 
-const USE_OVERLAY = true;
+const USE_OVERLAY = false;
 const getLocalFlag = () => {
     try{
         let lo = localStorage.getItem("local_flag") === 'true';
