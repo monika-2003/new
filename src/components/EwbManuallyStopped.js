@@ -43,8 +43,8 @@ const EwbManuallyStopped = ({sessionObject}) => {
             },
             body:JSON.stringify({
               "paginate": {
-                "number_of_rows": 100,
-                "page_number": 1
+                "number_of_rows": pageSize,
+                page_number: pageIndex + 1
               },
               "sort_fields": [
                 {}
@@ -58,6 +58,7 @@ const EwbManuallyStopped = ({sessionObject}) => {
             return;
           }
           setData(temp_data.data)
+          setPageCount(Math.ceil(temp_data["total_rows"] / pageSize));
         }
         setLoading(false);
       },
