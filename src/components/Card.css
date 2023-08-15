@@ -13,6 +13,15 @@
     cursor: pointer;
 }
 
+.cardbordered {
+    box-shadow: 7px 13px 22px -3px rgb(196 195 195);
+    border-radius: 4px;
+    padding: 50px;
+    cursor: pointer;
+    border: 3px solid #36A1FB;
+    border-radius: 7px;
+}
+
 .underline {
     text-decoration: none;
     color:black;
