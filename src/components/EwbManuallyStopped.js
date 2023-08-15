@@ -17,6 +17,11 @@ const EwbManuallyStopped = ({sessionObject}) => {
 
     var ACCESS_TOKEN = null
 
+    let date=new Date()
+    let dateMDY = `${date.getFullYear()}-${(date.getMonth() + 1)<10?('0'+(date.getMonth() + 1)):date.getMonth() + 1}-${date.getDate()<10?('0'+(date.getDate())):date.getDate()}`+" 23:59:00"; 
+    let dateMDY2 = `${date.getFullYear()}-${(date.getMonth() + 1)<10?('0'+(date.getMonth() + 1)):date.getMonth() + 1}-${date.getDate()<10?('0'+(date.getDate())):date.getDate()}`; 
+
+
 
     const fetchData = React.useCallback(
       async ({ pageSize, pageIndex, sortBy, customFilters }) => {
@@ -30,7 +35,23 @@ const EwbManuallyStopped = ({sessionObject}) => {
         // Set the loading state
         setLoading(true);
 
-        customFilters.manually_stopped = "1"
+        let report_type = localStorage.getItem("report_type")
+        if (report_type == "expiring_today"){
+          customFilters.valid_upto = dateMDY;
+        }
+        if (report_type == "extended_today"){
+          customFilters.last_extended = dateMDY2;
+        }
+        if (report_type == "manually_stopped"){
+          customFilters.manually_stopped = "1";
+        }
+        if (report_type == "expied_last_week"){
+          customFilters.expired_last_week = true;
+        }
+        if (report_type == "all"){
+        }
+
+
   
         if (fetchId === fetchIdRef.current) {
           ACCESS_TOKEN = "Bearer "+localStorage.getItem('login')
@@ -212,26 +233,6 @@ const EwbManuallyStopped = ({sessionObject}) => {
         setCheckedList([]);
     }
     
-    const [nameField,setNameField] = useState({
-      "ewaybill_no":"",
-      "ewb_date":"",
-      "valid_upto":"",
-      "last_extended":"",
-      "amount":"",
-      "consignor_place":"",
-      "consignee_place":"",
-      "consignor_name":"",
-      "consignee_name":"",
-      "cewb_no":"",
-      "truck_number":"",
-      "manually_stopped":1
-    })
-    
-    const fieldsOfFilters = ["ewaybill_no","ewb_date","valid_upto","last_extended","extended_times","amount","consignor_place","consignee_place","consignor_name","consignee_name","cewb_no","truck_number"]
-
-    const handleChange = (e) => {
-      setNameField({...nameField, [e.target.name]: e.target.value});
-    }
 
     const start = async (e) => {
       ACCESS_TOKEN = "Bearer "+localStorage.getItem('login');
@@ -251,6 +252,52 @@ const EwbManuallyStopped = ({sessionObject}) => {
         window.location.reload()
     }
 
+    const stop = async (e) => {
+      ACCESS_TOKEN = "Bearer "+localStorage.getItem('login');
+      setOverlay(true)
+      const rs = await fetch(SERVER_URL+"/eway/eway_bill_stop/", {
+        method:"PUT",
+        headers: {
+          "Content-Type":"application/json",
+            "Accept":"application/json",
+            "Authorization":ACCESS_TOKEN
+        },
+        body:JSON.stringify(checkedList)
+      })
+      const data = await rs.json();
+      setOverlay(false)
+      window.location.reload()
+    }
+
+    const getButtons = () => {
+      let report_type = localStorage.getItem("report_type")
+      if (report_type == "expiring_today"){
+        return (
+          <button className='btn' onClick={stop}>Stop</button>
+        )
+      }
+      if (report_type == "extended_today"){
+        return (
+          <button className='btn' onClick={stop}>Stop</button>
+        )
+      }
+      if (report_type == "manually_stopped"){
+        return (
+          <button className='btn' onClick={start}>Start</button>
+        )
+      }
+      if (report_type == "expied_last_week"){
+        return (
+          <></>
+        )
+      }
+      if (report_type == "all"){
+        return (
+          <></>
+        )
+      }
+    }
+
       return (
         <div className='ewb-expiring-today'>
 
@@ -261,7 +308,7 @@ const EwbManuallyStopped = ({sessionObject}) => {
               <Card />
               
               <div className='align-btns'>
-              <button className='btn' onClick={start}>Start</button>
+              {getButtons()}
               </div>
             <Background/>
               <div className='wrapper'>

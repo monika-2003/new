@@ -9,24 +9,52 @@ function Card(props) {
   return (
 
     <div className="cards">
-      <NavLink to = '/ewb-expiring-today' style={({ isActive }) =>
-              isActive ? {border: '3px solid #36A1FB' , borderRadius: '7px' , color: '#36A1FB'} : undefined
-            } className ='underline'><div className="card">Ewb Expiring Today</div></NavLink>
+      
+      <button  className="card"  style={{border: '3px solid #36A1FB' , borderRadius: '7px' , color: '#36A1FB'}}
+        onClick={()=>{
+          localStorage.setItem("report_type","expiring_today")
+          window.location.reload()
+        }}
+      >
+        Ewb Expiring Today
+      </button>
+      
+      <button  className="card"  style={{border: '3px solid #36A1FB' , borderRadius: '7px' , color: '#36A1FB'}}
+        onClick={()=>{
+          localStorage.setItem("report_type","extended_today")
+          window.location.reload()
+        }}
+      >
+        Ewb Extended Today
+      </button>
 
 
-      <NavLink to='/ewb-extended-today' style={({ isActive }) =>
-              isActive ? {border: '3px solid #36A1FB' , borderRadius: '7px' , color: '#36A1FB'} : undefined
-            } className ='underline'><div className="card">Ewb Extended Today</div></NavLink>
+      <button  className="card"  style={{border: '3px solid #36A1FB' , borderRadius: '7px' , color: '#36A1FB'}}
+        onClick={()=>{
+          localStorage.setItem("report_type","manually_stopped")
+          window.location.reload()
+        }}
+      >
+        Ewb Manually Stopped
+      </button>
 
-
-      <NavLink to = '/ewb-manually-stopped' style={({ isActive }) =>
-              isActive ? {border: '3px solid #36A1FB' , borderRadius: '7px' , color: '#36A1FB'} : undefined
-            } className ='underline'><div className="card">Ewb Manually Stopped</div></NavLink>
-
-
-      <NavLink to = '/ewb-expired-last-week' style={({ isActive }) =>
-              isActive ? {border: '3px solid #36A1FB' , borderRadius: '7px' , color: '#36A1FB'} : undefined
-            } className ='underline'><div className="card">Ewb Expired Last Week</div></NavLink>
+      <button  className="card" style={{border: '3px solid #36A1FB' , borderRadius: '7px' , color: '#36A1FB'}}
+        onClick={()=>{
+          localStorage.setItem("report_type","expied_last_week")
+          window.location.reload()
+        }}
+      >
+        Ewb Expired Last Week
+      </button>
+    
+      <button  className="card" style={{border: '3px solid #36A1FB' , borderRadius: '7px' , color: '#36A1FB'}}
+        onClick={()=>{
+          localStorage.setItem("report_type","all")
+          window.location.reload()
+        }}
+      >
+        All Ewb
+      </button>
     </div>
   );
 }

@@ -28,10 +28,7 @@ function App() {
         {/* <Route path="" element={<Users />} /> */}
         {/*<Route path='/' exact element={<Login sessionObject={sessionObject}/>}/>*/}
         {/* <Route path='/signup' element = {<Signup/>} /> */}
-        <Route path='/ewb-expiring-today' element = {<EwbExpiringToday sessionObject={sessionObject}/>} />
-        <Route path='/ewb-extended-today' element = {<EwbExtendedToday sessionObject={sessionObject}/>} />
-        <Route path='/ewb-manually-stopped' element = {<EwbManuallyStopped sessionObject={sessionObject}/>} />
-        <Route path='/ewb-expired-last-week' element = {<EwbExpiredLastWeek sessionObject={sessionObject}/>} />
+        <Route path='/ewb' element = {<EwbManuallyStopped sessionObject={sessionObject}/>} />
       </Routes>)}
     </BrowserRouter>
   );

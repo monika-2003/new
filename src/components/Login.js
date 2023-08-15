@@ -56,7 +56,8 @@ export default function Login({ sessionObject }) {
       setPopupError("Invalid credentials");
     } else if (resp.access_token) {
       localStorage.setItem("login",resp.access_token)
-      navigate("/ewb-expiring-today");
+      localStorage.setItem("report_type","expiring_today")
+      navigate("/ewb");
     }
 
     // let response = await fetch("localhost:5000/user_validation");
