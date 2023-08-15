@@ -8,7 +8,6 @@ import Card from './Card'
 import Background from "./Background.js";
 // import LoadingOverlay from "react-loading-overlay";
 const EwbManuallyStopped = ({sessionObject}) => {
-    const [startResult,setStartResult]=useState([])
     const [checkState, setCheckState] = useState([]);
     const [overlay, setOverlay] = useState(false);
     const [checkedList, setCheckedList] = React.useState([]);
@@ -238,7 +237,6 @@ const EwbManuallyStopped = ({sessionObject}) => {
     const start = async (e) => {
       ACCESS_TOKEN = "Bearer "+localStorage.getItem('login');
       setOverlay(true)
-      console.log("here",startResult)
       const rs = await fetch(SERVER_URL+"/eway/eway_bill_start/", {
         method:"PUT",
         headers: {
@@ -246,12 +244,12 @@ const EwbManuallyStopped = ({sessionObject}) => {
             "Accept":"application/json",
             "Authorization":ACCESS_TOKEN
         },
-        body:JSON.stringify(startResult)
+        body:JSON.stringify(checkedList)
       })
         const data = await rs.json();
-        console.log("start:",data,startResult)
-        fetchData()
+        // fetchData()
         setOverlay(false)
+        window.location.reload()
     }
 
       return (
