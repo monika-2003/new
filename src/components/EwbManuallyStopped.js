@@ -8,7 +8,6 @@ import Card from './Card'
 import Background from "./Background.js";
 // import LoadingOverlay from "react-loading-overlay";
 const EwbManuallyStopped = ({sessionObject}) => {
-    const [checkState, setCheckState] = useState([]);
     const [overlay, setOverlay] = useState(false);
     const [checkedList, setCheckedList] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
