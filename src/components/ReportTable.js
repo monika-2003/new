@@ -50,7 +50,6 @@ const ReportTable = React.forwardRef(({
     });
 
     let [updatedCustomFilters, setUpdatedCustomFilters] = React.useState({
-        "in_transit": null, 
     });
 
     React.useEffect(()=> {
@@ -135,19 +134,19 @@ const ReportTable = React.forwardRef(({
 
 
     // *********CODE FOR TRANSIT BUTTON*******
-    const handleTransit = () => {
-        // let sortBy = [{"in_transit": 1}];
-        // console.log("SORT", sort);
-        setChecked(!checked);
-        if(checked == false) {
-            customFilters.in_transit = 1;
-            fetchData({ pageIndex, pageSize, sortBy, customFilters, dateObject });
-        }
-        else {
-            customFilters.in_transit = null;
-            fetchData({ pageIndex, pageSize, sortBy, customFilters, dateObject });
-        }
-    }
+    // const handleTransit = () => {
+    //     // let sortBy = [{"in_transit": 1}];
+    //     // console.log("SORT", sort);
+    //     setChecked(!checked);
+    //     if(checked == false) {
+    //         customFilters.in_transit = 1;
+    //         fetchData({ pageIndex, pageSize, sortBy, customFilters, dateObject });
+    //     }
+    //     else {
+    //         customFilters.in_transit = null;
+    //         fetchData({ pageIndex, pageSize, sortBy, customFilters, dateObject });
+    //     }
+    // }
     // ******END************
 
     const updateFilters = (e) => {
@@ -208,17 +207,6 @@ const ReportTable = React.forwardRef(({
             <div className="report-container">
 
             {/* CODE FOR TRANSIT CHECKBOX */}
-            {title == "EwbExtensionReport" ? 
-            <label>
-                <input 
-                    type="checkbox"
-                    defaultChecked={checked} 
-                    onChange={handleTransit}
-                /> 
-                In Transit ?
-            </label>
-            : 
-            <div></div> }
 
                 <div id="wrapper1">
                     <div className="div1" style={{ width: `${tableWidth}` }}>

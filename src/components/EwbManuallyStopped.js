@@ -31,6 +31,8 @@ const EwbManuallyStopped = ({sessionObject}) => {
         console.log("12323", sortBy, customFilters, fetchId);
         // Set the loading state
         setLoading(true);
+
+        customFilters.manually_stopped = "1"
   
         if (fetchId === fetchIdRef.current) {
           ACCESS_TOKEN = "Bearer "+localStorage.getItem('login')
@@ -49,7 +51,7 @@ const EwbManuallyStopped = ({sessionObject}) => {
               "sort_fields": [
                 {}
               ],
-              "filter_fields": {"manually_stopped":1}
+              "filter_fields": customFilters
             })
           })
           let temp_data = await response.json();
