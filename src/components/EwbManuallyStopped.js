@@ -205,7 +205,7 @@ const EwbManuallyStopped = ({sessionObject}) => {
     const handleSelectAll = () => {
       let tempChecked = [];
       data.forEach((row) => {
-          tempChecked.push(row.eway_bill_no);
+          tempChecked.push(row.ewaybill_no);
       })
       setCheckedList(tempChecked);
     }

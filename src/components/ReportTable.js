@@ -225,6 +225,7 @@ const ReportTable = React.forwardRef(({
                                             type="checkbox"
                                             name="main_checkbox"
                                             value={getSelectAllValue()}
+                                            checked={getSelectAllValue()}
                                             onChange={(e) => {
                                                 if(getSelectAllValue()) {
                                                     handleDeselectAll();
