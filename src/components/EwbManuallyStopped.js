@@ -238,13 +238,13 @@ const EwbManuallyStopped = ({sessionObject}) => {
       ACCESS_TOKEN = "Bearer "+localStorage.getItem('login');
       setOverlay(true)
       const rs = await fetch(SERVER_URL+"/eway/eway_bill_start/", {
-        method:"PUT",
+        method:"POST",
         headers: {
           "Content-Type":"application/json",
             "Accept":"application/json",
             "Authorization":ACCESS_TOKEN
         },
-        body:JSON.stringify(checkedList)
+        body:JSON.stringify({"data": checkedList})
       })
         const data = await rs.json();
         // fetchData()
@@ -256,13 +256,13 @@ const EwbManuallyStopped = ({sessionObject}) => {
       ACCESS_TOKEN = "Bearer "+localStorage.getItem('login');
       setOverlay(true)
       const rs = await fetch(SERVER_URL+"/eway/eway_bill_stop/", {
-        method:"PUT",
+        method:"POST",
         headers: {
           "Content-Type":"application/json",
             "Accept":"application/json",
             "Authorization":ACCESS_TOKEN
         },
-        body:JSON.stringify(checkedList)
+        body:JSON.stringify({"data": checkedList})
       })
       const data = await rs.json();
       setOverlay(false)
