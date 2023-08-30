@@ -1,7 +1,4 @@
 import './App.css';
-import EwbExpiredLastWeek from './components/EwbExpiredLastWeek';
-import EwbExpiringToday from './components/EwbExpiringToday'
-import EwbExtendedToday from './components/EwbExtendedToday'
 import EwbManuallyStopped from './components/EwbManuallyStopped'
 import Login from './components/Login';
 import useSessionVariables from "./components/useSessionVariables.js";
